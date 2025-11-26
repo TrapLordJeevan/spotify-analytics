@@ -8,7 +8,7 @@ if (typeof File !== 'undefined') {
   const OriginalFile = global.File;
   
   // Override File constructor to capture the parts
-  global.File = class File extends OriginalFile {
+  const FilePolyfill = class extends OriginalFile {
     constructor(parts, filename, options = {}) {
       super(parts, filename, options);
       // Store parts for text() method
@@ -24,7 +24,7 @@ if (typeof File !== 'undefined') {
           if (part instanceof ArrayBuffer) {
             try {
               return Buffer.from(part).toString('utf8');
-            } catch {
+            } catch (e) {
               return String(part);
             }
           }
@@ -42,6 +42,8 @@ if (typeof File !== 'undefined') {
       // Last resort: return empty string
       return Promise.resolve('');
     }
-  } as any;
+  };
+  
+  global.File = FilePolyfill;
 }
 
