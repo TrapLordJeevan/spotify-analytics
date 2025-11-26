@@ -14,6 +14,19 @@ const intlPercent = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 
 
 export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
   const [query, setQuery] = useState('');
+  const [selectedArtist, setSelectedArtist] = useState<string>('');
+
+  // Get unique artists from plays (for music mode only)
+  const availableArtists = useMemo(() => {
+    if (mode !== 'music') return [];
+    const artistSet = new Set<string>();
+    plays.forEach((play) => {
+      if (play.contentType === 'music' && play.artistName) {
+        artistSet.add(play.artistName);
+      }
+    });
+    return Array.from(artistSet).sort();
+  }, [plays, mode]);
 
   const rows = useMemo(() => {
     if (mode === 'podcast') {
@@ -29,6 +42,11 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
   }, [plays, limit, mode]);
 
   const filteredRows = rows.filter((row) => {
+    // Filter by artist if selected
+    if (selectedArtist && row.type === 'song' && row.artistName !== selectedArtist) {
+      return false;
+    }
+    // Filter by search query
     const haystack =
       row.type === 'song'
         ? `${row.trackName} ${row.artistName}`.toLowerCase()
@@ -38,7 +56,7 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
+      <div className="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-700 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
             {mode === 'podcast' ? 'Top episodes' : 'Top songs'}
@@ -47,13 +65,29 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
             Showing {filteredRows.length} of {rows.length} entries
           </p>
         </div>
-        <input
-          type="text"
-          placeholder={`Search ${mode === 'podcast' ? 'episodes or shows' : 'songs or artists'}`}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          className="w-64 rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
-        />
+        <div className="flex flex-wrap gap-2">
+          {mode === 'music' && availableArtists.length > 0 && (
+            <select
+              value={selectedArtist}
+              onChange={(event) => setSelectedArtist(event.target.value)}
+              className="rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-900 dark:text-slate-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+            >
+              <option value="">All artists</option>
+              {availableArtists.map((artist) => (
+                <option key={artist} value={artist}>
+                  {artist}
+                </option>
+              ))}
+            </select>
+          )}
+          <input
+            type="text"
+            placeholder={`Search ${mode === 'podcast' ? 'episodes or shows' : 'songs or artists'}`}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            className="flex-1 min-w-[200px] rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+          />
+        </div>
       </div>
       <div className="max-h-[600px] overflow-y-auto">
         <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-700 text-sm">

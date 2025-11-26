@@ -14,7 +14,7 @@ export default function OverviewPage() {
   const content = hasAnyData ? (
     <>
       <SummaryCards plays={plays} />
-      <div className="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
         <TopLists plays={plays} />
         <StreaksCard plays={plays} />
       </div>
@@ -35,9 +35,9 @@ export default function OverviewPage() {
 
 function EmptyState() {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-      <h2 className="text-xl font-semibold text-slate-900">No data yet</h2>
-      <p className="mt-2 text-sm text-slate-500">
+    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-6 py-10 text-center">
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">No data yet</h2>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         Upload your Spotify extended streaming history to unlock analytics.
       </p>
       <Link

@@ -58,17 +58,17 @@ export function SummaryCards({ plays }: SummaryCardsProps) {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => (
         <div
           key={card.label}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-5 shadow-sm"
+          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4 shadow-sm"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             {card.label}
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{card.value}</p>
-          <p className="mt-1 text-sm text-slate-500">{card.helper}</p>
+          <p className="mt-1.5 text-2xl font-bold text-slate-900 dark:text-slate-100">{card.value}</p>
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{card.helper}</p>
         </div>
       ))}
     </div>

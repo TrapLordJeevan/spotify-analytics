@@ -45,9 +45,9 @@ export default function SongsPage() {
 
 function EmptyState() {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-      <h2 className="text-xl font-semibold text-slate-900">No data yet</h2>
-      <p className="mt-2 text-sm text-slate-500">
+    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-6 py-10 text-center">
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">No data yet</h2>
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         Upload your Spotify history to unlock the songs view.
       </p>
       <Link

@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useDataStore } from '@/store/useDataStore';
+import { getYearlyData } from '@/lib/analytics/time';
 
 const DATE_PRESETS = [
   { id: 'all', label: 'All time' },
@@ -14,11 +15,18 @@ export function FilterBar() {
   const sources = useDataStore((state) => state.sources);
   const filters = useDataStore((state) => state.filters);
   const setFilters = useDataStore((state) => state.setFilters);
+  const allPlays = useDataStore((state) => state.plays);
 
   const enabledSources = useMemo(
     () => sources.filter((source) => source.enabled !== false), // enabled is true or undefined
     [sources]
   );
+
+  // Get available years from all plays
+  const availableYears = useMemo(() => {
+    const yearlyData = getYearlyData(allPlays);
+    return yearlyData.map((entry) => entry.year).sort((a, b) => b - a);
+  }, [allPlays]);
 
   const selectedSourceIds = filters.selectedSources;
   const isAllSourcesSelected =
@@ -48,6 +56,18 @@ export function FilterBar() {
     setFilters({
       dateRange: {
         type: preset,
+      },
+    });
+  };
+
+  const handleYearSelect = (year: number) => {
+    const startDate = new Date(year, 0, 1);
+    const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+    setFilters({
+      dateRange: {
+        type: 'custom',
+        start: startDate,
+        end: endDate,
       },
     });
   };
@@ -144,7 +164,7 @@ export function FilterBar() {
                 type="button"
                 onClick={() => handleDatePreset(preset.id)}
                 className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                  filters.dateRange.type === preset.id
+                  filters.dateRange.type === preset.id && filters.dateRange.type !== 'custom'
                     ? 'bg-slate-900 dark:bg-slate-700 text-white'
                     : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
@@ -152,6 +172,33 @@ export function FilterBar() {
                 {preset.label}
               </button>
             ))}
+            {availableYears.length > 0 && (
+              <>
+                {availableYears.slice(0, 5).map((year) => {
+                  const isSelected = filters.dateRange.type === 'custom' &&
+                    filters.dateRange.start &&
+                    filters.dateRange.end &&
+                    filters.dateRange.start.getFullYear() === year &&
+                    filters.dateRange.end.getFullYear() === year &&
+                    filters.dateRange.start.getMonth() === 0 &&
+                    filters.dateRange.start.getDate() === 1;
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => handleYearSelect(year)}
+                      className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                        isSelected
+                          ? 'bg-emerald-600 text-white'
+                          : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  );
+                })}
+              </>
+            )}
           </div>
           <div className="flex flex-wrap gap-2 text-sm">
             <label className="flex items-center gap-2">
