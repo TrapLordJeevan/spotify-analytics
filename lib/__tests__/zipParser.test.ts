@@ -16,6 +16,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -33,6 +35,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -46,6 +50,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -60,6 +66,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -78,6 +86,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -91,6 +101,8 @@ describe('zipParser', () => {
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
       const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+      // Ensure buffer is accessible for polyfill
+      (zipFile as any)._parts = [zipBuffer];
 
       const result = await extractHistoryFromZip(zipFile);
 
