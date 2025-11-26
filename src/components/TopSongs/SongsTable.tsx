@@ -37,13 +37,13 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
   });
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
             {mode === 'podcast' ? 'Top episodes' : 'Top songs'}
           </h3>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Showing {filteredRows.length} of {rows.length} entries
           </p>
         </div>
@@ -52,12 +52,12 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
           placeholder={`Search ${mode === 'podcast' ? 'episodes or shows' : 'songs or artists'}`}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          className="w-64 rounded-md border border-slate-200 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+          className="w-64 rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-1.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
         />
       </div>
       <div className="max-h-[600px] overflow-y-auto">
-        <table className="min-w-full divide-y divide-slate-100 text-sm">
-          <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-700 text-sm">
+          <thead className="bg-slate-50 dark:bg-slate-700 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             <tr>
               <th className="px-4 py-2 text-left">#</th>
               <th className="px-4 py-2 text-left">{mode === 'podcast' ? 'Episode' : 'Song'}</th>
@@ -67,10 +67,10 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
               <th className="px-4 py-2 text-right">Share</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
             {filteredRows.map((row, index) => (
               <tr key={`${row.type === 'song' ? row.trackName : row.episodeName}-${row.type === 'song' ? row.artistName : row.showName}`}>
-                <td className="px-4 py-2 text-slate-500">{index + 1}</td>
+                <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{index + 1}</td>
                 <td className="px-4 py-2 font-medium">
                   {row.type === 'song' ? row.trackName : row.episodeName}
                 </td>
@@ -86,8 +86,8 @@ export function SongsTable({ plays, mode, limit = 100 }: SongsTableProps) {
             ))}
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-4 text-center text-sm text-slate-500">
-                  No results match “{query}”.
+                <td colSpan={6} className="px-4 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                  No results match "{query}".
                 </td>
               </tr>
             )}

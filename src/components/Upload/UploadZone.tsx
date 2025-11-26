@@ -163,15 +163,15 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
   return (
     <div className="space-y-4">
       <div
-        className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-400 hover:bg-slate-100"
+        className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-6 py-10 text-center transition hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
         onDrop={handleDrop}
         onDragEnter={preventDefaults}
         onDragOver={preventDefaults}
       >
-        <p className="text-lg font-semibold text-slate-800">
+        <p className="text-lg font-semibold text-slate-800 dark:text-slate-200">
           Drop your Spotify ZIP or JSON files here
         </p>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           We process everything locally in your browser. Nothing ever leaves your device.
         </p>
         <label className="mt-6 inline-flex cursor-pointer items-center rounded-md bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
@@ -185,19 +185,19 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
             onChange={handleInput}
           />
         </label>
-        <p className="mt-3 text-xs text-slate-400">
+        <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
           Supports Spotify{"'"}s Streaming History ZIPs or raw Streaming_History*.json files.
         </p>
       </div>
 
       {status && (
-        <div className="rounded-md border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+        <div className="rounded-md border border-emerald-100 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-200">
           {status}
         </div>
       )}
 
       {error && (
-        <div className="rounded-md border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+        <div className="rounded-md border border-rose-100 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-900 dark:text-rose-200">
           {error}
         </div>
       )}

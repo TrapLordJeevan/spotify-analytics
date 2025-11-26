@@ -13,6 +13,11 @@ export default function SongsPage() {
   const mode: 'music' | 'podcast' =
     contentType === 'podcast' ? 'podcast' : 'music';
 
+  // Filter plays by mode for the table
+  const filteredPlays = contentType === 'both' 
+    ? plays.filter(p => mode === 'music' ? p.contentType === 'music' : p.contentType === 'podcast')
+    : plays;
+
   return (
     <MainLayout
       title={mode === 'podcast' ? 'Top podcast episodes' : 'Top songs'}
@@ -24,9 +29,9 @@ export default function SongsPage() {
     >
       {hasAnyData ? (
         <>
-          <SongsTable plays={plays} mode={mode} />
+          <SongsTable plays={filteredPlays} mode={mode} />
           {contentType === 'both' && (
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
               Currently showing music. Flip the content toggle above to view podcast episodes.
             </p>
           )}

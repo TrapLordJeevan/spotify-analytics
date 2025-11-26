@@ -16,7 +16,7 @@ export function FilterBar() {
   const setFilters = useDataStore((state) => state.setFilters);
 
   const enabledSources = useMemo(
-    () => sources.filter((source) => source.enabled),
+    () => sources.filter((source) => source.enabled !== false), // enabled is true or undefined
     [sources]
   );
 
@@ -76,10 +76,10 @@ export function FilterBar() {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4 shadow-sm">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Accounts
           </p>
           <div className="flex flex-wrap gap-2">
@@ -88,8 +88,8 @@ export function FilterBar() {
               onClick={() => setFilters({ selectedSources: [] })}
               className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
                 isAllSourcesSelected
-                  ? 'bg-slate-900 text-white'
-                  : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                  ? 'bg-slate-900 dark:bg-slate-700 text-white'
+                  : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
               All accounts
@@ -101,7 +101,7 @@ export function FilterBar() {
                 className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
                   selectedSourceIds.includes(source.id)
                     ? 'bg-emerald-600 text-white'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
                 onClick={() => toggleSource(source.id)}
               >
@@ -112,7 +112,7 @@ export function FilterBar() {
         </div>
 
         <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Content type
           </p>
           <div className="flex flex-wrap gap-2">
@@ -124,7 +124,7 @@ export function FilterBar() {
                 className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition ${
                   filters.contentType === type
                     ? 'bg-emerald-600 text-white'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {type}
@@ -134,7 +134,7 @@ export function FilterBar() {
         </div>
 
         <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Date range
           </p>
           <div className="flex flex-wrap gap-2">
@@ -145,8 +145,8 @@ export function FilterBar() {
                 onClick={() => handleDatePreset(preset.id)}
                 className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
                   filters.dateRange.type === preset.id
-                    ? 'bg-slate-900 text-white'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    ? 'bg-slate-900 dark:bg-slate-700 text-white'
+                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {preset.label}
@@ -155,21 +155,21 @@ export function FilterBar() {
           </div>
           <div className="flex flex-wrap gap-2 text-sm">
             <label className="flex items-center gap-2">
-              <span className="text-slate-500">From</span>
+              <span className="text-slate-500 dark:text-slate-400">From</span>
               <input
                 type="date"
                 value={formatDateInput(filters.dateRange.start)}
                 onChange={(event) => handleCustomDateChange('start', event.target.value)}
-                className="rounded-md border border-slate-200 px-2 py-1 text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
               />
             </label>
             <label className="flex items-center gap-2">
-              <span className="text-slate-500">To</span>
+              <span className="text-slate-500 dark:text-slate-400">To</span>
               <input
                 type="date"
                 value={formatDateInput(filters.dateRange.end)}
                 onChange={(event) => handleCustomDateChange('end', event.target.value)}
-                className="rounded-md border border-slate-200 px-2 py-1 text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
               />
             </label>
           </div>

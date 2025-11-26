@@ -36,7 +36,8 @@ const defaultFilters: FilterState = {
 
 const sanitizeSelectedSources = (selected: string[], sources: Source[]) => {
   if (selected.length === 0) return selected;
-  const enabled = new Set(sources.filter((s) => s.enabled).map((s) => s.id));
+  // enabled is true or undefined (default enabled)
+  const enabled = new Set(sources.filter((s) => s.enabled !== false).map((s) => s.id));
   return selected.filter((id) => enabled.has(id));
 };
 
@@ -138,18 +139,22 @@ export const useDataStore = create<DataStore>((set, get) => ({
     
     let filtered = plays;
 
+    // Get enabled source IDs (default to enabled if undefined)
     const enabledSourceIds = new Set(
-      sources.filter((source) => source.enabled).map((source) => source.id)
+      sources
+        .filter((source) => source.enabled !== false) // enabled is true or undefined
+        .map((source) => source.id)
     );
 
-    if (enabledSourceIds.size > 0) {
-      filtered = filtered.filter((play) => enabledSourceIds.has(play.sourceId));
-    }
+    // If no sources are enabled (all explicitly disabled), return empty
     if (enabledSourceIds.size === 0) {
       return [];
     }
+
+    // Filter to only enabled sources
+    filtered = filtered.filter((play) => enabledSourceIds.has(play.sourceId));
     
-    // Filter by sources
+    // Filter by selected sources (if specific sources are selected)
     if (filters.selectedSources.length > 0) {
       filtered = filtered.filter((play) =>
         filters.selectedSources.includes(play.sourceId)

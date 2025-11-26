@@ -5,6 +5,9 @@ export function getTopSongs(plays: Play[], limit: number = 25): TopSong[] {
   const trackMap = new Map<string, { trackName: string; artistName: string; minutes: number; count: number }>();
   
   for (const play of plays) {
+    // Only process music plays
+    if (play.contentType !== 'music') continue;
+    // Require both trackName and artistName
     if (!play.trackName || !play.artistName) continue;
     
     const key = `${play.artistName}|||${play.trackName}`;
@@ -79,6 +82,8 @@ export function getTopEpisodes(plays: Play[], limit: number = 25): Array<{ episo
   const episodeMap = new Map<string, { episodeName: string; showName: string; minutes: number; count: number }>();
   
   for (const play of plays) {
+    // Only process podcast plays
+    if (play.contentType !== 'podcast') continue;
     if (!play.trackName) continue; // For podcasts, trackName is episode name
     
     // Try to extract show name from artistName or use a fallback
