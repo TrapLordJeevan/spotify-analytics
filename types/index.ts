@@ -6,7 +6,8 @@ export interface Play {
   artistName: string | null;
   trackName: string | null;
   albumName: string | null;
-  spotifyUri: string | null;
+  spotifyTrackUri: string | null;
+  artistId?: string | null; // optional, parsed from URI if possible
   msPlayed: number;
   contentType: ContentType;
   sourceId: string;

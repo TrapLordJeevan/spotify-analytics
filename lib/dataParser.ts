@@ -35,7 +35,24 @@ export function parsePlayRecord(
                    null;
 
   // Extract URI
-  const spotifyUri = record.spotify_uri || record.spotifyUri || null;
+  const spotifyTrackUri = record.spotify_uri || record.spotifyUri || null;
+
+  // Extract artist ID from URI if present (e.g., spotify:artist:4Z8W4fKeB5YxbusRsdQVPb)
+  let artistId: string | null = null;
+  if (spotifyTrackUri) {
+    // Try to extract artist ID from track URI's metadata or look for separate artist_uri field
+    const artistUri = record.spotify_artist_uri || record.artist_uri || null;
+    if (artistUri && artistUri.startsWith('spotify:artist:')) {
+      artistId = artistUri.replace('spotify:artist:', '');
+    }
+    // Alternative: some exports might have master_metadata_album_artist_uri
+    if (!artistId && record.master_metadata_album_artist_uri) {
+      const uri = record.master_metadata_album_artist_uri;
+      if (uri.startsWith('spotify:artist:')) {
+        artistId = uri.replace('spotify:artist:', '');
+      }
+    }
+  }
 
   // Extract play duration
   const msPlayed = record.msPlayed || record.ms_played || 0;
@@ -57,7 +74,8 @@ export function parsePlayRecord(
     artistName,
     trackName,
     albumName,
-    spotifyUri,
+    spotifyTrackUri,
+    artistId: artistId || undefined,
     msPlayed,
     contentType,
     sourceId,

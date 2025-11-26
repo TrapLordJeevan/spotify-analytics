@@ -1,5 +1,5 @@
 import { Play, TopGenre, GenreEvolution } from '@/types';
-import { mapArtistToGenre } from '../genreMapper';
+import { getGenreForArtist } from '../genreMapper';
 import { aggregateByYear } from '../aggregators';
 
 export function getTopGenres(plays: Play[]): TopGenre[] {
@@ -8,7 +8,7 @@ export function getTopGenres(plays: Play[]): TopGenre[] {
   for (const play of plays) {
     if (play.contentType !== 'music') continue; // Only music has genres
     
-    const genre = mapArtistToGenre(play.artistName);
+    const genre = getGenreForArtist(play.artistId, play.artistName);
     const current = genreMap.get(genre) || 0;
     genreMap.set(genre, current + play.msPlayed / 60000);
   }
@@ -37,7 +37,7 @@ export function getGenreEvolution(plays: Play[]): GenreEvolution[] {
     for (const play of yearPlays) {
       if (play.contentType !== 'music') continue;
       
-      const genre = mapArtistToGenre(play.artistName);
+      const genre = getGenreForArtist(play.artistId, play.artistName);
       const current = genreMap.get(genre) || 0;
       genreMap.set(genre, current + play.msPlayed / 60000);
     }

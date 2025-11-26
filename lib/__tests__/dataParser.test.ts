@@ -9,7 +9,7 @@ describe('dataParser', () => {
         trackName: 'Test Track',
         albumName: 'Test Album',
         msPlayed: 180000,
-        spotifyUri: 'spotify:track:123',
+        spotify_uri: 'spotify:track:123',
         track_name: 'Test Track', // Add for content classification
       };
       const sourceId = 'test-source-1';
@@ -21,7 +21,7 @@ describe('dataParser', () => {
       expect(result?.trackName).toBe('Test Track');
       expect(result?.albumName).toBe('Test Album');
       expect(result?.msPlayed).toBe(180000);
-      expect(result?.spotifyUri).toBe('spotify:track:123');
+      expect(result?.spotifyTrackUri).toBe('spotify:track:123');
       expect(result?.sourceId).toBe(sourceId);
       expect(result?.timestamp).toEqual(new Date('2023-01-01T12:00:00Z'));
       expect(result?.contentType).toBe('music');
@@ -35,6 +35,7 @@ describe('dataParser', () => {
         master_metadata_album_name: 'Album',
         ms_played: 200000,
         spotify_uri: 'spotify:track:456',
+        spotify_artist_uri: 'spotify:artist:12345',
         track_name: 'Track', // Add for content classification
       };
       const sourceId = 'test-source-2';
@@ -47,6 +48,7 @@ describe('dataParser', () => {
       expect(result?.albumName).toBe('Album');
       expect(result?.msPlayed).toBe(200000);
       expect(result?.contentType).toBe('music');
+      expect(result?.artistId).toBe('12345');
     });
 
     it('should return null for records with no timestamp', () => {
