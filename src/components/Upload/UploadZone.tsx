@@ -320,13 +320,19 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
       </div>
 
       {status && (
-        <div className="rounded-md border border-emerald-100 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-200">
+        <div
+          data-testid="upload-status"
+          className="rounded-md border border-emerald-100 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-200"
+        >
           {status}
         </div>
       )}
 
       {error && (
-        <div className="rounded-md border border-rose-100 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-900 dark:text-rose-200">
+        <div
+          data-testid="upload-error"
+          className="rounded-md border border-rose-100 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-900 dark:text-rose-200"
+        >
           {error}
         </div>
       )}

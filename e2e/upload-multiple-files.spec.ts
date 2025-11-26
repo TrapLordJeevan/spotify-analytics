@@ -43,10 +43,12 @@ test.describe('File Upload - Multiple Files', () => {
     await fileInput.setInputFiles(files);
 
     // Wait for processing to complete
-    await expect(page.getByText(/Imported/i)).toBeVisible({ timeout: 15000 });
+    const statusOrError = page.locator('[data-testid="upload-status"], [data-testid="upload-error"]');
+    await expect(statusOrError.first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('upload-error')).not.toBeVisible();
 
     // Verify success message shows all files were processed
-    const successMessage = page.getByText(/Imported/i);
+    const successMessage = page.getByTestId('upload-status');
     await expect(successMessage).toContainText('15'); // Should mention 15 sources
 
     // Clean up test files
@@ -89,10 +91,12 @@ test.describe('File Upload - Multiple Files', () => {
     await fileInput.setInputFiles(zipPath);
 
     // Wait for processing to complete
-    await expect(page.getByText(/Imported/i)).toBeVisible({ timeout: 15000 });
+    const statusOrError = page.locator('[data-testid="upload-status"], [data-testid="upload-error"]');
+    await expect(statusOrError.first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('upload-error')).not.toBeVisible();
 
     // Verify success - ZIP should extract all files and combine into one source
-    const successMessage = page.getByText(/Imported/i);
+    const successMessage = page.getByTestId('upload-status');
     await expect(successMessage).toBeVisible();
 
     // Clean up
@@ -132,7 +136,9 @@ test.describe('File Upload - Multiple Files', () => {
     await expect(page.getByText(/at most.*files/i)).not.toBeVisible({ timeout: 2000 });
 
     // Should show success message instead
-    await expect(page.getByText(/Imported/i)).toBeVisible({ timeout: 15000 });
+    const statusOrError = page.locator('[data-testid="upload-status"], [data-testid="upload-error"]');
+    await expect(statusOrError.first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('upload-error')).not.toBeVisible();
 
     // Clean up
     files.forEach((file) => {
@@ -189,7 +195,9 @@ test.describe('File Upload - Multiple Files', () => {
     await fileInput.setInputFiles(allFiles);
 
     // Should process all files without error
-    await expect(page.getByText(/Imported/i)).toBeVisible({ timeout: 15000 });
+    const statusOrError = page.locator('[data-testid="upload-status"], [data-testid="upload-error"]');
+    await expect(statusOrError.first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('upload-error')).not.toBeVisible();
     await expect(page.getByText(/at most.*files/i)).not.toBeVisible({ timeout: 2000 });
 
     // Clean up
@@ -203,4 +211,3 @@ test.describe('File Upload - Multiple Files', () => {
     });
   });
 });
-

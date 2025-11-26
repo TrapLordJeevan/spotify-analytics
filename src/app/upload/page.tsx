@@ -28,7 +28,7 @@ export default function UploadPage() {
           file.
         </p>
         {totalPlays > 0 && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400" data-testid="upload-summary">
             Already imported {totalPlays.toLocaleString()} plays from {sourcesCount}{' '}
             {sourcesCount === 1 ? 'source' : 'sources'}.{' '}
             <Link href="/overview" className="font-medium text-emerald-600 dark:text-emerald-400 underline">
@@ -53,5 +53,4 @@ export default function UploadPage() {
     </MainLayout>
   );
 }
-
 
