@@ -12,6 +12,7 @@ export interface Play {
   contentType: ContentType;
   sourceId: string;
   username?: string | null;
+  skipped?: boolean;
 }
 
 export interface Source {
@@ -23,11 +24,13 @@ export interface Source {
 
 export interface FilterState {
   selectedSources: string[]; // Empty array means "All accounts"
-  contentType: 'music' | 'podcasts' | 'both';
+  contentType: 'music' | 'podcast' | 'both';
+  metric: 'minutes' | 'plays';
   dateRange: {
     type: 'all' | 'last12' | 'last6' | 'last3' | 'custom';
     start?: Date;
     end?: Date;
+    years?: number[]; // optional discrete year selection
   };
 }
 
@@ -50,6 +53,15 @@ export interface TopArtist {
 export interface TopGenre {
   genre: string;
   minutes: number;
+  percentage: number;
+  playCount?: number;
+}
+
+export interface TopAlbum {
+  albumName: string;
+  artistName: string;
+  minutes: number;
+  playCount: number;
   percentage: number;
 }
 
@@ -101,7 +113,3 @@ export interface ContentSplit {
   musicPercentage: number;
   podcastPercentage: number;
 }
-
-
-
-

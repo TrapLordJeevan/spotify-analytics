@@ -23,6 +23,8 @@ const ACCEPTED_MIME_TYPES = [
   'text/json',
 ];
 
+type YearRange = { start: number; end: number } | null;
+
 // No file count limit - users can upload as many files as needed
 
 export function UploadZone({ onUploadComplete }: UploadZoneProps) {
@@ -54,11 +56,118 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
     return null;
   };
 
-  const buildSourceName = (file: File, username?: string | null) => {
-    if (username) {
-      return `${username}`;
+  const getYearRange = (records: any[]): YearRange => {
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (const record of records) {
+      const ts = record.ts || record.endTime;
+      if (!ts) continue;
+      const date = new Date(ts);
+      if (isNaN(date.getTime())) continue;
+      const year = date.getFullYear();
+      if (year < min) min = year;
+      if (year > max) max = year;
     }
-    return file.name.replace(/\.(zip|json)$/i, '');
+
+    if (min === Infinity || max === -Infinity) return null;
+    return { start: min, end: max };
+  };
+
+  const parseHistoryName = (name: string) => {
+    const clean = name.replace(/\.[^/.]+$/, '');
+    const m = clean.match(
+      /^Streaming_History_(Audio|Video|Podcast)?_?(\d{4})(?:-(\d{4}))?(?:[_-](\d+))?$/i
+    );
+    if (!m) return null;
+    return {
+      media: m[1] ? m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() : 'Audio',
+      start: Number(m[2]),
+      end: m[3] ? Number(m[3]) : Number(m[2]),
+      part: m[4] ? Number(m[4]) : undefined,
+    };
+  };
+
+  const buildSourceName = (
+    file: File,
+    username?: string | null,
+    yearRange?: YearRange,
+    fileHints?: string[]
+  ) => {
+    const baseName = file.name.replace(/\.[^/.]+$/, '');
+    const hintParses = (fileHints || []).map((h) => parseHistoryName(h)).filter(Boolean) as Array<{
+      media: string;
+      start: number;
+      end: number;
+      part?: number;
+    }>;
+    const selfParse = parseHistoryName(baseName);
+
+    const media =
+      selfParse?.media ||
+      hintParses.find((p) => p.media)?.media ||
+      'Audio';
+
+    const years = [
+      ...(hintParses.map((p) => [p.start, p.end]).flat()),
+      ...(selfParse ? [selfParse.start, selfParse.end] : []),
+      ...(yearRange ? [yearRange.start, yearRange.end] : []),
+    ].filter((n): n is number => typeof n === 'number' && !Number.isNaN(n));
+
+    const startYear = years.length ? Math.min(...years) : undefined;
+    const endYear = years.length ? Math.max(...years) : undefined;
+
+    const partsFound = [
+      ...(hintParses.map((p) => (typeof p.part === 'number' ? p.part : undefined)).filter(
+        (n): n is number => typeof n === 'number'
+      )),
+      ...(selfParse && typeof selfParse.part === 'number' ? [selfParse.part] : []),
+    ];
+
+    const minPart = partsFound.length ? Math.min(...partsFound) + 1 : undefined;
+    const maxPart = partsFound.length ? Math.max(...partsFound) + 1 : undefined;
+
+    let label = media;
+    if (startYear) {
+      label += ` ${startYear}${endYear && endYear !== startYear ? `-${endYear}` : ''}`;
+    }
+    if (minPart && maxPart) {
+      label += minPart === maxPart ? ` (part ${minPart})` : ` (parts ${minPart}-${maxPart})`;
+    } else if (fileHints && fileHints.length > 1) {
+      label += ` (${fileHints.length} files)`;
+    }
+
+    if (username) {
+      return `${username} • ${label}`;
+    }
+    return label;
+  };
+
+  const mergeYearRanges = (ranges: Array<YearRange | undefined>): YearRange => {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const range of ranges) {
+      if (!range) continue;
+      if (range.start < min) min = range.start;
+      if (range.end > max) max = range.end;
+    }
+    if (min === Infinity || max === -Infinity) return null;
+    return { start: min, end: max };
+  };
+
+  const yearRangeFromHints = (hints?: string[]): YearRange => {
+    if (!hints || hints.length === 0) return null;
+    const years: number[] = [];
+    for (const hint of hints) {
+      const clean = hint.replace(/\.[^/.]+$/, '');
+      const match = clean.match(/(\d{4})(?:-(\d{4}))?/);
+      if (match) {
+        years.push(Number(match[1]));
+        if (match[2]) years.push(Number(match[2]));
+      }
+    }
+    if (years.length === 0) return null;
+    return { start: Math.min(...years), end: Math.max(...years) };
   };
 
   const handleFiles = useCallback(
@@ -81,10 +190,12 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
             continue;
           }
 
+          let fileHints: string[] | undefined;
           const records =
             kind === 'zip'
               ? await (async () => {
                   const extracted = await extractHistoryFromZip(file);
+                  fileHints = extracted.map((entry) => entry.filename);
                   return extracted.flatMap((entry) => entry.content ?? []);
                 })()
               : await parseJsonFile(file);
@@ -98,7 +209,8 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
               ? crypto.randomUUID()
               : `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
           const username = detectUsername(records);
-          const name = buildSourceName(file, username);
+          const yearRange = mergeYearRanges([getYearRange(records), yearRangeFromHints(fileHints)]);
+          const name = buildSourceName(file, username, yearRange, fileHints);
           const plays = parsePlayRecords(records, sourceId);
 
           if (plays.length === 0) {
@@ -132,7 +244,8 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
         }
       } catch (err) {
         console.error(err);
-        setError('Something went wrong while processing your files.');
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        setError(`Something went wrong while processing your files: ${message}`);
       } finally {
         setIsProcessing(false);
       }
@@ -204,5 +317,3 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
     </div>
   );
 }
-
-
