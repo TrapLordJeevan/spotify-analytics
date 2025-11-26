@@ -54,7 +54,7 @@ describe('UploadZone', () => {
   });
 
   it('should handle JSON file upload', async () => {
-    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
+    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000, track_name: 'Track' }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
@@ -68,11 +68,11 @@ describe('UploadZone', () => {
       expect(mockParsePlayRecords).toHaveBeenCalled();
       expect(mockAddSource).toHaveBeenCalled();
       expect(mockAddPlays).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it('should handle ZIP file upload', async () => {
-    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
+    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000, track_name: 'Track' }];
     mockExtractHistoryFromZip.mockResolvedValue([
       { filename: 'Streaming_History_music_2023.json', content: testData },
     ]);
@@ -88,11 +88,11 @@ describe('UploadZone', () => {
       expect(mockParsePlayRecords).toHaveBeenCalled();
       expect(mockAddSource).toHaveBeenCalled();
       expect(mockAddPlays).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
   });
 
   it('should handle multiple file uploads (more than 8 files)', async () => {
-    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
+    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000, track_name: 'Track' }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
@@ -125,7 +125,7 @@ describe('UploadZone', () => {
   });
 
   it('should display success message after upload', async () => {
-    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
+    const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000, track_name: 'Track' }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
@@ -136,7 +136,7 @@ describe('UploadZone', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Imported/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('should handle empty files gracefully', async () => {

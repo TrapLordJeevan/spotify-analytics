@@ -10,6 +10,7 @@ describe('dataParser', () => {
         albumName: 'Test Album',
         msPlayed: 180000,
         spotifyUri: 'spotify:track:123',
+        track_name: 'Test Track', // Add for content classification
       };
       const sourceId = 'test-source-1';
 
@@ -23,6 +24,7 @@ describe('dataParser', () => {
       expect(result?.spotifyUri).toBe('spotify:track:123');
       expect(result?.sourceId).toBe(sourceId);
       expect(result?.timestamp).toEqual(new Date('2023-01-01T12:00:00Z'));
+      expect(result?.contentType).toBe('music');
     });
 
     it('should handle alternative field names', () => {
@@ -33,6 +35,7 @@ describe('dataParser', () => {
         master_metadata_album_name: 'Album',
         ms_played: 200000,
         spotify_uri: 'spotify:track:456',
+        track_name: 'Track', // Add for content classification
       };
       const sourceId = 'test-source-2';
 
@@ -43,6 +46,7 @@ describe('dataParser', () => {
       expect(result?.trackName).toBe('Track');
       expect(result?.albumName).toBe('Album');
       expect(result?.msPlayed).toBe(200000);
+      expect(result?.contentType).toBe('music');
     });
 
     it('should return null for records with no timestamp', () => {
@@ -84,6 +88,7 @@ describe('dataParser', () => {
         trackName: 'Track',
         msPlayed: 1000,
         username: 'testuser',
+        track_name: 'Track', // Add for content classification
       };
       const sourceId = 'test-source-5';
 
@@ -91,6 +96,7 @@ describe('dataParser', () => {
 
       expect(result).not.toBeNull();
       expect(result?.username).toBe('testuser');
+      expect(result?.contentType).toBe('music');
     });
   });
 
@@ -102,12 +108,14 @@ describe('dataParser', () => {
           artistName: 'Artist 1',
           trackName: 'Track 1',
           msPlayed: 1000,
+          track_name: 'Track 1', // Add for content classification
         },
         {
           endTime: '2023-01-01T13:00:00Z',
           artistName: 'Artist 2',
           trackName: 'Track 2',
           msPlayed: 2000,
+          track_name: 'Track 2', // Add for content classification
         },
       ];
       const sourceId = 'test-source-6';
@@ -126,6 +134,7 @@ describe('dataParser', () => {
           artistName: 'Artist 1',
           trackName: 'Track 1',
           msPlayed: 1000,
+          track_name: 'Track 1', // Add for content classification
         },
         {
           // Missing timestamp
@@ -144,6 +153,7 @@ describe('dataParser', () => {
           artistName: 'Artist 4',
           trackName: 'Track 4',
           msPlayed: 3000,
+          track_name: 'Track 4', // Add for content classification
         },
       ];
       const sourceId = 'test-source-7';
