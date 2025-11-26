@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  spotify-analytics:
+    build: .
+    container_name: spotify-analytics
+    restart: unless-stopped
+    ports:
+      - '8181:80'
+
+
+
