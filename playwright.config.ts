@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
+ * Note: Playwright requires Node.js 18+ for E2E tests.
+ * Run E2E tests separately with: npm run test:e2e
  */
 export default defineConfig({
   testDir: './e2e',

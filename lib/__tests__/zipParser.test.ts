@@ -105,7 +105,10 @@ describe('zipParser', () => {
         { endTime: '2023-01-01', artistName: 'Artist 1', trackName: 'Track 1', msPlayed: 180000 },
         { endTime: '2023-01-02', artistName: 'Artist 2', trackName: 'Track 2', msPlayed: 200000 },
       ];
-      const jsonFile = new File([JSON.stringify(testData)], 'test.json', { type: 'application/json' });
+      const jsonString = JSON.stringify(testData);
+      const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
+      // Store parts for polyfill
+      (jsonFile as any)._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
@@ -118,7 +121,10 @@ describe('zipParser', () => {
           { endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }
         ]
       };
-      const jsonFile = new File([JSON.stringify(testData)], 'test.json', { type: 'application/json' });
+      const jsonString = JSON.stringify(testData);
+      const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
+      // Store parts for polyfill
+      (jsonFile as any)._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
@@ -126,7 +132,10 @@ describe('zipParser', () => {
     });
 
     it('should handle empty arrays', async () => {
-      const jsonFile = new File([JSON.stringify([])], 'test.json', { type: 'application/json' });
+      const jsonString = JSON.stringify([]);
+      const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
+      // Store parts for polyfill
+      (jsonFile as any)._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
