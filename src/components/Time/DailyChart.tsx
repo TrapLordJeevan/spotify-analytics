@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Line,
   LineChart,
+  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,6 +15,7 @@ import { getDailyData, getMonthlyData, getYearlyData } from '@/lib/analytics/tim
 
 interface DailyChartProps {
   plays: Play[];
+  metric: 'minutes' | 'plays';
 }
 
 const monthNames = [
@@ -31,11 +33,13 @@ const monthNames = [
   'December',
 ];
 
-export function DailyChart({ plays }: DailyChartProps) {
-  const yearlyOptions = useMemo(() => getYearlyData(plays), [plays]);
+export function DailyChart({ plays, metric }: DailyChartProps) {
+  const yearlyOptions = useMemo(() => getYearlyData(plays, metric), [plays, metric]);
   const latestYear = yearlyOptions.at(-1)?.year;
   const [selectedYear, setSelectedYear] = useState<number | undefined>(latestYear);
   const [selectedMonth, setSelectedMonth] = useState<number | undefined>(undefined);
+  const formatValue = (value: number) =>
+    metric === 'minutes' ? `${value.toLocaleString()}m` : `${value.toLocaleString()} plays`;
 
   useEffect(() => {
     if (latestYear && latestYear !== selectedYear) {
@@ -46,27 +50,27 @@ export function DailyChart({ plays }: DailyChartProps) {
 
   const availableMonths = useMemo(() => {
     if (!selectedYear) return [];
-    const months = getMonthlyData(plays).filter((entry) => entry.year === selectedYear);
+    const months = getMonthlyData(plays, metric).filter((entry) => entry.year === selectedYear);
     return months.map((entry) => entry.month);
-  }, [plays, selectedYear]);
+  }, [plays, selectedYear, metric]);
 
   const dailyData = useMemo(
-    () => getDailyData(plays, selectedYear, selectedMonth),
-    [plays, selectedMonth, selectedYear]
+    () => getDailyData(plays, selectedYear, selectedMonth, metric),
+    [plays, selectedMonth, selectedYear, metric]
   );
 
   if (!latestYear) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400 shadow-sm">
         No daily data yet.
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-4 py-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-slate-900">Daily listening</h3>
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Daily listening</h3>
         <div className="flex items-center gap-3 text-sm">
           <label className="flex items-center gap-2">
             Year
@@ -116,8 +120,9 @@ export function DailyChart({ plays }: DailyChartProps) {
             }))}
           >
             <XAxis dataKey="label" hide />
-            <YAxis tickFormatter={(value) => `${value}m`} />
-            <Tooltip />
+            <YAxis tickFormatter={formatValue} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+            <Tooltip formatter={(value: number) => [formatValue(value), 'Listening']} />
             <Line type="monotone" dataKey="minutes" stroke="#f97316" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -125,5 +130,3 @@ export function DailyChart({ plays }: DailyChartProps) {
     </div>
   );
 }
-
-

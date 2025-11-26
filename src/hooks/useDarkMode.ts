@@ -19,44 +19,16 @@ function isDarkTime(): boolean {
  * Automatically switches between light and dark mode based on time of day
  */
 export function useDarkMode() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    // Set initial state
-    setIsDark(isDarkTime());
-
-    // Update on mount and set up interval to check every minute
-    const updateDarkMode = () => {
-      const shouldBeDark = isDarkTime();
-      setIsDark(shouldBeDark);
-      
-      // Apply dark mode class to document
-      if (shouldBeDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
-
-    updateDarkMode();
-
-    // Check every minute to update dark mode
-    const interval = setInterval(updateDarkMode, 60000);
-
-    // Also listen for visibility change (when user switches tabs/windows)
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        updateDarkMode();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
+    // Force dark mode globally
+    setIsDark(true);
+    document.documentElement.classList.add('dark');
     return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.documentElement.classList.add('dark');
     };
   }, []);
 
   return isDark;
 }
-

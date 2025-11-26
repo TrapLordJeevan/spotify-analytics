@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { SongsTable } from '@/components/TopSongs/SongsTable';
+import { SkippedSongsCard } from '@/components/TopSongs/SkippedSongsCard';
 import { useDataStore } from '@/store/useDataStore';
 
 export default function SongsPage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
   const contentType = useDataStore((state) => state.filters.contentType);
+  const metric = useDataStore((state) => state.filters.metric);
 
   const mode: 'music' | 'podcast' =
     contentType === 'podcast' ? 'podcast' : 'music';
@@ -29,7 +31,12 @@ export default function SongsPage() {
     >
       {hasAnyData ? (
         <>
-          <SongsTable plays={filteredPlays} mode={mode} />
+          <SongsTable plays={filteredPlays} mode={mode} metric={metric} />
+          {mode === 'music' && (
+            <div className="mt-6">
+              <SkippedSongsCard plays={filteredPlays} />
+            </div>
+          )}
           {contentType === 'both' && (
             <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
               Currently showing music. Flip the content toggle above to view podcast episodes.
@@ -59,7 +66,5 @@ function EmptyState() {
     </div>
   );
 }
-
-
 
 

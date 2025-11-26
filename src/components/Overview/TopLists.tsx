@@ -6,26 +6,35 @@ import type { Play, TopArtist, TopSong } from '@/types';
 
 interface TopListsProps {
   plays: Play[];
+  metric: 'minutes' | 'plays';
 }
 
-export function TopLists({ plays }: TopListsProps) {
+export function TopLists({ plays, metric }: TopListsProps) {
   const { topSongs, topArtists } = useMemo(() => {
-    const songs = getTopSongs(plays, 5);
-    const artists = getTopArtists(plays, 5);
+    const songs = getTopSongs(plays, 5, metric);
+    const artists = getTopArtists(plays, 5, metric);
     return { topSongs: songs, topArtists: artists };
-  }, [plays]);
+  }, [plays, metric]);
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <TopListCard title="Top artists" items={topArtists} />
-      <TopSongListCard title="Top songs" items={topSongs} />
+      <TopListCard title="Top artists" items={topArtists} metric={metric} />
+      <TopSongListCard title="Top songs" items={topSongs} metric={metric} />
     </div>
   );
 }
 
 const intlPercent = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
 
-function TopListCard({ title, items }: { title: string; items: TopArtist[] }) {
+function TopListCard({
+  title,
+  items,
+  metric,
+}: {
+  title: string;
+  items: TopArtist[];
+  metric: 'minutes' | 'plays';
+}) {
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4 shadow-sm">
       <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
@@ -42,7 +51,10 @@ function TopListCard({ title, items }: { title: string; items: TopArtist[] }) {
                 <span className="font-medium text-slate-800 dark:text-slate-200">{item.artistName}</span>
               </span>
               <span className="text-slate-500 dark:text-slate-400">
-                {Math.round(item.minutes)} min · {intlPercent.format(item.percentage)}%
+                {metric === 'minutes'
+                  ? `${Math.round(item.minutes)} min`
+                  : `${item.playCount} plays`}{' '}
+                · {intlPercent.format(item.percentage)}%
               </span>
             </li>
           ))}
@@ -52,7 +64,15 @@ function TopListCard({ title, items }: { title: string; items: TopArtist[] }) {
   );
 }
 
-function TopSongListCard({ title, items }: { title: string; items: TopSong[] }) {
+function TopSongListCard({
+  title,
+  items,
+  metric,
+}: {
+  title: string;
+  items: TopSong[];
+  metric: 'minutes' | 'plays';
+}) {
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4 shadow-sm">
       <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
@@ -71,7 +91,10 @@ function TopSongListCard({ title, items }: { title: string; items: TopSong[] }) 
                   <p className="text-xs text-slate-500 dark:text-slate-400">{item.artistName}</p>
                 </div>
                 <span className="ml-auto text-slate-500 dark:text-slate-400">
-                  {Math.round(item.minutes)} min · {intlPercent.format(item.percentage)}%
+                  {metric === 'minutes'
+                    ? `${Math.round(item.minutes)} min`
+                    : `${item.playCount} plays`}{' '}
+                  · {intlPercent.format(item.percentage)}%
                 </span>
               </div>
             </li>
@@ -81,7 +104,5 @@ function TopSongListCard({ title, items }: { title: string; items: TopSong[] }) 
     </div>
   );
 }
-
-
 
 

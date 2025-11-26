@@ -52,22 +52,34 @@ export function FilterBar() {
     setFilters({ contentType: value });
   };
 
+  const handleMetricToggle = (value: 'minutes' | 'plays') => {
+    setFilters({ metric: value });
+  };
+
   const handleDatePreset = (preset: (typeof DATE_PRESETS)[number]['id']) => {
     setFilters({
       dateRange: {
         type: preset,
+        start: undefined,
+        end: undefined,
+        years: undefined,
       },
     });
   };
 
   const handleYearSelect = (year: number) => {
-    const startDate = new Date(year, 0, 1);
-    const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+    const currentYears = filters.dateRange.years || [];
+    const exists = currentYears.includes(year);
+    const nextYears = exists
+      ? currentYears.filter((y) => y !== year)
+      : [...currentYears, year];
+
     setFilters({
       dateRange: {
         type: 'custom',
-        start: startDate,
-        end: endDate,
+        years: nextYears.sort((a, b) => a - b),
+        start: undefined,
+        end: undefined,
       },
     });
   };
@@ -83,6 +95,7 @@ export function FilterBar() {
         type: 'custom',
         start: nextStart,
         end: nextEnd,
+        years: undefined,
       },
     });
   };
@@ -100,16 +113,16 @@ export function FilterBar() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1 space-y-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Accounts
+            Uploads
           </p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setFilters({ selectedSources: [] })}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
                 isAllSourcesSelected
-                  ? 'bg-slate-900 dark:bg-slate-700 text-white'
-                  : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
               All accounts
@@ -118,10 +131,10 @@ export function FilterBar() {
               <button
                 type="button"
                 key={source.id}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
                   selectedSourceIds.includes(source.id)
-                    ? 'bg-emerald-600 text-white'
-                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600'
+                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
                 onClick={() => toggleSource(source.id)}
               >
@@ -141,13 +154,35 @@ export function FilterBar() {
                 key={type}
                 type="button"
                 onClick={() => handleContentToggle(type)}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition ${
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition border ${
                   filters.contentType === type
-                    ? 'bg-emerald-600 text-white'
-                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600'
+                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Metric
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(['minutes', 'plays'] as const).map((metric) => (
+              <button
+                key={metric}
+                type="button"
+                onClick={() => handleMetricToggle(metric)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition border ${
+                  filters.metric === metric
+                    ? 'bg-emerald-600 text-white border-emerald-600'
+                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                }`}
+              >
+                {metric}
               </button>
             ))}
           </div>
@@ -163,10 +198,10 @@ export function FilterBar() {
                 key={preset.id}
                 type="button"
                 onClick={() => handleDatePreset(preset.id)}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
                   filters.dateRange.type === preset.id && filters.dateRange.type !== 'custom'
-                    ? 'bg-slate-900 dark:bg-slate-700 text-white'
-                    : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100'
+                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {preset.label}
@@ -175,22 +210,22 @@ export function FilterBar() {
             {availableYears.length > 0 && (
               <>
                 {availableYears.slice(0, 5).map((year) => {
-                  const isSelected = filters.dateRange.type === 'custom' &&
-                    filters.dateRange.start &&
-                    filters.dateRange.end &&
-                    filters.dateRange.start.getFullYear() === year &&
-                    filters.dateRange.end.getFullYear() === year &&
-                    filters.dateRange.start.getMonth() === 0 &&
-                    filters.dateRange.start.getDate() === 1;
+                  const isSelected = filters.dateRange.years
+                    ? filters.dateRange.years.includes(year)
+                    : filters.dateRange.type === 'custom' &&
+                      filters.dateRange.start &&
+                      filters.dateRange.end &&
+                      year >= filters.dateRange.start.getFullYear() &&
+                      year <= filters.dateRange.end.getFullYear();
                   return (
                     <button
                       key={year}
                       type="button"
                       onClick={() => handleYearSelect(year)}
-                      className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                      className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
                         isSelected
-                          ? 'bg-emerald-600 text-white'
-                          : 'border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
                       }`}
                     >
                       {year}
@@ -225,5 +260,3 @@ export function FilterBar() {
     </div>
   );
 }
-
-

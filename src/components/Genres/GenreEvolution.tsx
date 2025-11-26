@@ -46,16 +46,16 @@ export function GenreEvolution({ plays }: GenreEvolutionChartProps) {
 
   if (chartData.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400 shadow-sm">
         Not enough data to render the genre evolution chart.
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-4 py-6 shadow-sm">
-      <h3 className="text-base font-semibold text-slate-900">Genre evolution</h3>
-      <p className="text-sm text-slate-500">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-6 shadow-sm">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Genre evolution</h3>
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         Share of listening minutes per genre each year.
       </p>
       <div className="mt-4 h-80">
@@ -89,5 +89,4 @@ export function GenreEvolution({ plays }: GenreEvolutionChartProps) {
     </div>
   );
 }
-
 

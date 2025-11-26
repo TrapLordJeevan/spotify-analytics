@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: 'Upload', href: '/upload' },
   { label: 'Overview', href: '/overview' },
   { label: 'Artists', href: '/artists' },
+  { label: 'Albums', href: '/albums' },
   { label: 'Songs', href: '/songs' },
   { label: 'Genres', href: '/genres' },
   { label: 'Time', href: '/time' },
@@ -48,7 +49,6 @@ export function Navbar() {
     </header>
   );
 }
-
 
 
 

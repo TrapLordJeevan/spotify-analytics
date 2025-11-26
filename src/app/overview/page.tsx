@@ -10,12 +10,13 @@ import { useDataStore } from '@/store/useDataStore';
 export default function OverviewPage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
+  const metric = useDataStore((state) => state.filters.metric);
 
   const content = hasAnyData ? (
     <>
       <SummaryCards plays={plays} />
       <div className="mt-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <TopLists plays={plays} />
+        <TopLists plays={plays} metric={metric} />
         <StreaksCard plays={plays} />
       </div>
     </>
@@ -49,7 +50,6 @@ function EmptyState() {
     </div>
   );
 }
-
 
 
 

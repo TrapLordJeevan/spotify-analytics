@@ -46,19 +46,18 @@ export function YearTimeline({ plays }: YearTimelineProps) {
       {timeline.map((entry) => (
         <div
           key={entry.year}
-          className="min-w-[180px] rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+          className="min-w-[180px] rounded-2xl border border-slate-700 bg-slate-800 px-4 py-4 shadow-sm text-slate-100"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
             {entry.year}
           </p>
-          <p className="mt-2 text-lg font-semibold text-slate-900">{entry.artistName}</p>
-          <p className="text-sm text-slate-500">{entry.minutes} minutes</p>
+          <p className="mt-2 text-lg font-semibold text-slate-100">{entry.artistName}</p>
+          <p className="text-sm text-slate-300">{entry.minutes} minutes</p>
         </div>
       ))}
     </div>
   );
 }
-
 
 
 

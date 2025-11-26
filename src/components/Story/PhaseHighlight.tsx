@@ -22,11 +22,11 @@ export function PhaseHighlight({ plays }: PhaseHighlightProps) {
       {phases.map((phase) => (
         <div
           key={`${phase.artistName}-${phase.startMonth.year}-${phase.startMonth.month}`}
-          className="rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+          className="rounded-2xl border border-slate-700 bg-slate-800 px-4 py-4 shadow-sm text-slate-100"
         >
-          <p className="text-xs uppercase tracking-wide text-emerald-500">Phase</p>
-          <p className="mt-1 text-lg font-semibold text-slate-900">{phase.artistName}</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-xs uppercase tracking-wide text-emerald-400">Phase</p>
+          <p className="mt-1 text-lg font-semibold text-slate-100">{phase.artistName}</p>
+          <p className="text-sm text-slate-300">
             {formatMonth(phase.startMonth)} – {formatMonth(phase.endMonth)} ·{' '}
             {phase.intensity.toFixed(1)}% of listening
           </p>
@@ -41,7 +41,6 @@ const formatMonth = ({ year, month }: { year: number; month: number }) =>
     month: 'short',
     year: 'numeric',
   });
-
 
 
 

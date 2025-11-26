@@ -9,6 +9,7 @@ import { useDataStore } from '@/store/useDataStore';
 export default function ArtistsPage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
+  const metric = useDataStore((state) => state.filters.metric);
 
   return (
     <MainLayout
@@ -17,8 +18,8 @@ export default function ArtistsPage() {
     >
       {hasAnyData ? (
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <ArtistsTable plays={plays} />
-          <ArtistsChart plays={plays} />
+          <ArtistsTable plays={plays} metric={metric} />
+          <ArtistsChart plays={plays} metric={metric} />
         </div>
       ) : (
         <EmptyState />
@@ -43,7 +44,6 @@ function EmptyState() {
     </div>
   );
 }
-
 
 
 

@@ -2,29 +2,21 @@
 
 import Link from 'next/link';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { TopGenresChart } from '@/components/Genres/TopGenresChart';
-import { GenresTable } from '@/components/Genres/GenresTable';
-import { GenreEvolution } from '@/components/Genres/GenreEvolution';
 import { useDataStore } from '@/store/useDataStore';
+import { AlbumsTable } from '@/components/TopAlbums/AlbumsTable';
 
-export default function GenresPage() {
+export default function AlbumsPage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
   const metric = useDataStore((state) => state.filters.metric);
 
   return (
     <MainLayout
-      title="Genres"
-      description="See the mix of genres powering your listening and how that taste evolves."
+      title="Albums"
+      description="See which albums you’ve played the most."
     >
       {hasAnyData ? (
-        <div className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
-            <TopGenresChart plays={plays} metric={metric} />
-            <GenresTable plays={plays} metric={metric} />
-          </div>
-          <GenreEvolution plays={plays} />
-        </div>
+        <AlbumsTable plays={plays} metric={metric} />
       ) : (
         <EmptyState />
       )}
@@ -35,9 +27,9 @@ export default function GenresPage() {
 function EmptyState() {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-      <h2 className="text-xl font-semibold text-slate-900">No genre data yet</h2>
+      <h2 className="text-xl font-semibold text-slate-900">No album data yet</h2>
       <p className="mt-2 text-sm text-slate-500">
-        Upload at least one streaming history file containing music plays.
+        Upload your listening history to see your top albums.
       </p>
       <Link
         href="/upload"
@@ -48,6 +40,4 @@ function EmptyState() {
     </div>
   );
 }
-
-
 

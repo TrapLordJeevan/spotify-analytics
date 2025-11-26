@@ -11,6 +11,7 @@ import { useDataStore } from '@/store/useDataStore';
 export default function TimePage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
+  const metric = useDataStore((state) => state.filters.metric);
 
   return (
     <MainLayout
@@ -19,12 +20,12 @@ export default function TimePage() {
     >
       {hasAnyData ? (
         <div className="space-y-6">
-          <TimeOfDayChart plays={plays} />
+          <TimeOfDayChart plays={plays} metric={metric} />
           <div className="grid gap-6 lg:grid-cols-2">
-            <MonthlyChart plays={plays} />
-            <YearlyChart plays={plays} />
+            <MonthlyChart plays={plays} metric={metric} />
+            <YearlyChart plays={plays} metric={metric} />
           </div>
-          <DailyChart plays={plays} />
+          <DailyChart plays={plays} metric={metric} />
         </div>
       ) : (
         <EmptyState />
@@ -49,7 +50,6 @@ function EmptyState() {
     </div>
   );
 }
-
 
 
 

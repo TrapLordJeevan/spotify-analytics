@@ -13,7 +13,7 @@ export function RediscoveryHighlight({ plays }: RediscoveryHighlightProps) {
 
   if (rediscoveries.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-slate-400">
         No rediscovery moments yet—come back after revisiting old favorites.
       </p>
     );
@@ -24,10 +24,10 @@ export function RediscoveryHighlight({ plays }: RediscoveryHighlightProps) {
       {rediscoveries.map((entry) => (
         <li
           key={`${entry.artistName}-${entry.rediscoveryDate.toISOString()}`}
-          className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+          className="rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 shadow-sm text-slate-100"
         >
-          <p className="text-base font-semibold text-slate-900">{entry.artistName}</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-base font-semibold text-slate-100">{entry.artistName}</p>
+          <p className="text-sm text-slate-300">
             Came back after {entry.gapMonths} months away ·{' '}
             {entry.rediscoveryDate.toLocaleDateString(undefined, {
               month: 'short',
@@ -39,7 +39,6 @@ export function RediscoveryHighlight({ plays }: RediscoveryHighlightProps) {
     </ul>
   );
 }
-
 
 
 
