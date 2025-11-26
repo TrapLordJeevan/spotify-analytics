@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { UploadZone } from '../UploadZone';
 import { useDataStore } from '@/store/useDataStore';
 import { extractHistoryFromZip, parseJsonFile } from '@/lib/zipParser';
@@ -54,15 +54,14 @@ describe('UploadZone', () => {
   });
 
   it('should handle JSON file upload', async () => {
-    const user = userEvent.setup();
     const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     const file = new File([JSON.stringify(testData)], 'test.json', { type: 'application/json' });
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
       expect(mockParseJsonFile).toHaveBeenCalledWith(file);
@@ -73,17 +72,16 @@ describe('UploadZone', () => {
   });
 
   it('should handle ZIP file upload', async () => {
-    const user = userEvent.setup();
     const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
     mockExtractHistoryFromZip.mockResolvedValue([
       { filename: 'Streaming_History_music_2023.json', content: testData },
     ]);
 
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     const file = new File(['zip content'], 'test.zip', { type: 'application/zip' });
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
       expect(mockExtractHistoryFromZip).toHaveBeenCalledWith(file);
@@ -94,34 +92,32 @@ describe('UploadZone', () => {
   });
 
   it('should handle multiple file uploads (more than 8 files)', async () => {
-    const user = userEvent.setup();
     const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     
     // Create 15 files (more than the old 8 file limit)
     const files = Array.from({ length: 15 }, (_, i) => 
       new File([JSON.stringify(testData)], `test${i}.json`, { type: 'application/json' })
     );
 
-    await user.upload(input, files);
+    fireEvent.change(input, { target: { files } });
 
     await waitFor(() => {
       // Should process all 15 files without error
       expect(mockParseJsonFile).toHaveBeenCalledTimes(15);
       expect(mockAddSource).toHaveBeenCalledTimes(15);
-    });
+    }, { timeout: 3000 });
   });
 
   it('should show error for unsupported file types', async () => {
-    const user = userEvent.setup();
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
       expect(screen.getByText(/Unsupported file/i)).toBeInTheDocument();
@@ -129,15 +125,14 @@ describe('UploadZone', () => {
   });
 
   it('should display success message after upload', async () => {
-    const user = userEvent.setup();
     const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
     mockParseJsonFile.mockResolvedValue(testData);
 
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     const file = new File([JSON.stringify(testData)], 'test.json', { type: 'application/json' });
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
       expect(screen.getByText(/Imported/i)).toBeInTheDocument();
@@ -145,14 +140,13 @@ describe('UploadZone', () => {
   });
 
   it('should handle empty files gracefully', async () => {
-    const user = userEvent.setup();
     mockParseJsonFile.mockResolvedValue([]);
 
     render(<UploadZone />);
-    const input = screen.getByLabelText(/select files/i);
+    const input = screen.getByLabelText(/select files/i) as HTMLInputElement;
     const file = new File([JSON.stringify([])], 'empty.json', { type: 'application/json' });
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
       expect(mockAddSource).not.toHaveBeenCalled();

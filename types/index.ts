@@ -17,6 +17,7 @@ export interface Source {
   id: string;
   name: string;
   detectedUsername?: string | null;
+  enabled?: boolean;
 }
 
 export interface FilterState {

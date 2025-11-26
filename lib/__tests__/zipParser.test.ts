@@ -14,8 +14,8 @@ describe('zipParser', () => {
       zip.file('other_file.txt', 'not a json file');
       zip.file('Streaming_History_podcast_2023.json', JSON.stringify([testData[0]]));
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -31,8 +31,8 @@ describe('zipParser', () => {
       zip.file('other_file.txt', 'not a json file');
       zip.file('random.json', JSON.stringify({ data: 'test' }));
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -44,8 +44,8 @@ describe('zipParser', () => {
       const testData = [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }];
       zip.file('Streaming_History_music_2023.json', JSON.stringify(testData));
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -58,8 +58,8 @@ describe('zipParser', () => {
       const testData = { items: [{ endTime: '2023-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }] };
       zip.file('Streaming_History_music_2023.json', JSON.stringify(testData));
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -76,8 +76,8 @@ describe('zipParser', () => {
         zip.file(`Streaming_History_music_2023_${i}.json`, JSON.stringify(testData));
       }
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -89,8 +89,8 @@ describe('zipParser', () => {
       zip.file('Streaming_History_music_2023.json', JSON.stringify([]));
       zip.file('Streaming_History_music_2024.json', JSON.stringify([{ endTime: '2024-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }]));
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const zipFile = new File([zipBlob], 'test.zip', { type: 'application/zip' });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
 
       const result = await extractHistoryFromZip(zipFile);
 
