@@ -51,6 +51,44 @@ describe('dataParser', () => {
       expect(result?.artistId).toBe('12345');
     });
 
+    it('should handle 2023+ streaming history fields', () => {
+      const record = {
+        ts: '2024-05-12T08:30:00Z',
+        master_metadata_track_name: 'New Track',
+        master_metadata_album_artist_name: 'New Artist',
+        master_metadata_album_album_name: 'New Album',
+        ms_played: 240000,
+        spotify_track_uri: 'spotify:track:new123',
+      };
+      const sourceId = 'test-source-new-format';
+
+      const result = parsePlayRecord(record, sourceId);
+
+      expect(result).not.toBeNull();
+      expect(result?.artistName).toBe('New Artist');
+      expect(result?.trackName).toBe('New Track');
+      expect(result?.albumName).toBe('New Album');
+      expect(result?.spotifyTrackUri).toBe('spotify:track:new123');
+      expect(result?.contentType).toBe('music');
+    });
+
+    it('should capture podcast episode and show names', () => {
+      const record = {
+        ts: '2023-02-02T10:00:00Z',
+        episode_name: 'Episode Title',
+        episode_show_name: 'Show Title',
+        ms_played: 180000,
+      };
+      const sourceId = 'test-source-podcast';
+
+      const result = parsePlayRecord(record, sourceId);
+
+      expect(result).not.toBeNull();
+      expect(result?.trackName).toBe('Episode Title');
+      expect(result?.artistName).toBe('Show Title');
+      expect(result?.contentType).toBe('podcast');
+    });
+
     it('should return null for records with no timestamp', () => {
       const record = {
         artistName: 'Artist',
@@ -177,4 +215,3 @@ describe('dataParser', () => {
     });
   });
 });
-

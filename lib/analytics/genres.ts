@@ -2,26 +2,45 @@ import { Play, TopGenre, GenreEvolution } from '@/types';
 import { getGenreForArtist } from '../genreMapper';
 import { aggregateByYear } from '../aggregators';
 
-export function getTopGenres(plays: Play[]): TopGenre[] {
-  const genreMap = new Map<string, number>();
+type Metric = 'minutes' | 'plays';
+
+const metricValue = (minutes: number, count: number, metric: Metric) =>
+  metric === 'minutes' ? minutes : count;
+
+export function getTopGenres(plays: Play[], metric: Metric = 'minutes'): TopGenre[] {
+  const genreMap = new Map<string, { minutes: number; count: number }>();
   
   for (const play of plays) {
     if (play.contentType !== 'music') continue; // Only music has genres
     
     const genre = getGenreForArtist(play.artistId, play.artistName);
-    const current = genreMap.get(genre) || 0;
-    genreMap.set(genre, current + play.msPlayed / 60000);
+    const current = genreMap.get(genre) || { minutes: 0, count: 0 };
+    genreMap.set(genre, {
+      minutes: current.minutes + play.msPlayed / 60000,
+      count: current.count + 1,
+    });
   }
   
-  const totalMinutes = Array.from(genreMap.values()).reduce((sum, minutes) => sum + minutes, 0);
+  const totalMetric = Array.from(genreMap.values()).reduce(
+    (sum, entry) => sum + metricValue(entry.minutes, entry.count, metric),
+    0
+  );
   
   return Array.from(genreMap.entries())
-    .map(([genre, minutes]) => ({
+    .map(([genre, entry]) => ({
       genre,
-      minutes: Math.round(minutes),
-      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
+      minutes: Math.round(entry.minutes),
+      playCount: entry.count,
+      percentage:
+        totalMetric > 0
+          ? (metricValue(entry.minutes, entry.count, metric) / totalMetric) * 100
+          : 0,
     }))
-    .sort((a, b) => b.minutes - a.minutes);
+    .sort(
+      (a, b) =>
+        metricValue(b.minutes, b.playCount || 0, metric) -
+        metricValue(a.minutes, a.playCount || 0, metric)
+    );
 }
 
 export function getGenreEvolution(plays: Play[]): GenreEvolution[] {
@@ -59,7 +78,6 @@ export function getGenreEvolution(plays: Play[]): GenreEvolution[] {
   
   return result.sort((a, b) => a.year - b.year);
 }
-
 
 
 

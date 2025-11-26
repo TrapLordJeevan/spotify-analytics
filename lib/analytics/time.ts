@@ -1,8 +1,10 @@
 import { Play, TimeOfDayData, MonthlyData, YearlyData } from '@/types';
 import { aggregateByHour, aggregateByMonth, aggregateByYear, aggregateByDay } from '../aggregators';
 
-export function getTimeOfDayData(plays: Play[]): TimeOfDayData[] {
-  const hourlyData = aggregateByHour(plays);
+type Metric = 'minutes' | 'plays';
+
+export function getTimeOfDayData(plays: Play[], metric: Metric = 'minutes'): TimeOfDayData[] {
+  const hourlyData = aggregateByHour(plays, metric);
   const result: TimeOfDayData[] = [];
   
   for (let hour = 0; hour < 24; hour++) {
@@ -15,8 +17,8 @@ export function getTimeOfDayData(plays: Play[]): TimeOfDayData[] {
   return result;
 }
 
-export function getMonthlyData(plays: Play[]): MonthlyData[] {
-  const monthlyData = aggregateByMonth(plays);
+export function getMonthlyData(plays: Play[], metric: Metric = 'minutes'): MonthlyData[] {
+  const monthlyData = aggregateByMonth(plays, metric);
   const result: MonthlyData[] = [];
   
   for (const [key, minutes] of monthlyData.entries()) {
@@ -34,8 +36,8 @@ export function getMonthlyData(plays: Play[]): MonthlyData[] {
   });
 }
 
-export function getYearlyData(plays: Play[]): YearlyData[] {
-  const yearlyData = aggregateByYear(plays);
+export function getYearlyData(plays: Play[], metric: Metric = 'minutes'): YearlyData[] {
+  const yearlyData = aggregateByYear(plays, metric);
   const result: YearlyData[] = [];
   
   for (const [year, minutes] of yearlyData.entries()) {
@@ -44,11 +46,16 @@ export function getYearlyData(plays: Play[]): YearlyData[] {
       minutes: Math.round(minutes),
     });
   }
-  
+
   return result.sort((a, b) => a.year - b.year);
 }
 
-export function getDailyData(plays: Play[], year?: number, month?: number): Array<{ date: Date; minutes: number }> {
+export function getDailyData(
+  plays: Play[],
+  year?: number,
+  month?: number,
+  metric: Metric = 'minutes'
+): Array<{ date: Date; minutes: number }> {
   let filtered = plays;
   
   if (year !== undefined && month !== undefined) {
@@ -58,7 +65,7 @@ export function getDailyData(plays: Play[], year?: number, month?: number): Arra
     });
   }
   
-  const dailyData = aggregateByDay(filtered);
+  const dailyData = aggregateByDay(filtered, metric);
   const result: Array<{ date: Date; minutes: number }> = [];
   
   for (const [dateStr, minutes] of dailyData.entries()) {
@@ -71,8 +78,8 @@ export function getDailyData(plays: Play[], year?: number, month?: number): Arra
   return result.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
-export function getPeakHour(plays: Play[]): number | null {
-  const hourlyData = aggregateByHour(plays);
+export function getPeakHour(plays: Play[], metric: Metric = 'minutes'): number | null {
+  const hourlyData = aggregateByHour(plays, metric);
   if (hourlyData.size === 0) return null;
   
   let maxHour = 0;
@@ -88,8 +95,8 @@ export function getPeakHour(plays: Play[]): number | null {
   return maxHour;
 }
 
-export function getTimeOfDaySummary(plays: Play[]): string {
-  const hourlyData = aggregateByHour(plays);
+export function getTimeOfDaySummary(plays: Play[], metric: Metric = 'minutes'): string {
+  const hourlyData = aggregateByHour(plays, metric);
   if (hourlyData.size === 0) return 'No listening data';
   
   // Find the hour range with most listening
@@ -115,7 +122,6 @@ export function getTimeOfDaySummary(plays: Play[]): string {
     return `You mostly listen between ${formatHour(minHour)} and ${formatHour(maxHour)}.`;
   }
 }
-
 
 
 

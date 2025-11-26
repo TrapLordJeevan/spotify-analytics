@@ -1,7 +1,12 @@
-import { Play, TopSong, TopArtist } from '@/types';
+import { Play, TopSong, TopArtist, TopAlbum } from '@/types';
 import { aggregateByMonth } from '../aggregators';
 
-export function getTopSongs(plays: Play[], limit: number = 25): TopSong[] {
+type Metric = 'minutes' | 'plays';
+
+const metricValue = (minutes: number, count: number, metric: Metric) =>
+  metric === 'minutes' ? minutes : count;
+
+export function getTopSongs(plays: Play[], limit: number = 25, metric: Metric = 'minutes'): TopSong[] {
   const trackMap = new Map<string, { trackName: string; artistName: string; minutes: number; count: number }>();
   
   for (const play of plays) {
@@ -19,21 +24,31 @@ export function getTopSongs(plays: Play[], limit: number = 25): TopSong[] {
     });
   }
   
-  const totalMinutes = Array.from(trackMap.values()).reduce((sum, item) => sum + item.minutes, 0);
+  const totalMetric = Array.from(trackMap.values()).reduce(
+    (sum, item) => sum + metricValue(item.minutes, item.count, metric),
+    0
+  );
   
   return Array.from(trackMap.entries())
     .map(([key, data]) => ({
       trackName: data.trackName,
       artistName: data.artistName,
       minutes: Math.round(data.minutes),
-      percentage: totalMinutes > 0 ? (data.minutes / totalMinutes) * 100 : 0,
+      percentage:
+        totalMetric > 0
+          ? (metricValue(data.minutes, data.count, metric) / totalMetric) * 100
+          : 0,
       playCount: data.count,
     }))
-    .sort((a, b) => b.minutes - a.minutes)
+    .sort(
+      (a, b) =>
+        metricValue(b.minutes, b.playCount, metric) -
+        metricValue(a.minutes, a.playCount, metric)
+    )
     .slice(0, limit);
 }
 
-export function getTopArtists(plays: Play[], limit: number = 25): TopArtist[] {
+export function getTopArtists(plays: Play[], limit: number = 25, metric: Metric = 'minutes'): TopArtist[] {
   const artistMap = new Map<string, { minutes: number; count: number; plays: Play[] }>();
   
   for (const play of plays) {
@@ -47,7 +62,10 @@ export function getTopArtists(plays: Play[], limit: number = 25): TopArtist[] {
     });
   }
   
-  const totalMinutes = Array.from(artistMap.values()).reduce((sum, item) => sum + item.minutes, 0);
+  const totalMetric = Array.from(artistMap.values()).reduce(
+    (sum, item) => sum + metricValue(item.minutes, item.count, metric),
+    0
+  );
   
   const artists = Array.from(artistMap.entries())
     .map(([artistName, data]) => {
@@ -67,18 +85,29 @@ export function getTopArtists(plays: Play[], limit: number = 25): TopArtist[] {
       return {
         artistName,
         minutes: Math.round(data.minutes),
-        percentage: totalMinutes > 0 ? (data.minutes / totalMinutes) * 100 : 0,
+        percentage:
+          totalMetric > 0
+            ? (metricValue(data.minutes, data.count, metric) / totalMetric) * 100
+            : 0,
         playCount: data.count,
         peakMonth,
       };
     })
-    .sort((a, b) => b.minutes - a.minutes)
+    .sort(
+      (a, b) =>
+        metricValue(b.minutes, b.playCount, metric) -
+        metricValue(a.minutes, a.playCount, metric)
+    )
     .slice(0, limit);
   
   return artists;
 }
 
-export function getTopEpisodes(plays: Play[], limit: number = 25): Array<{ episodeName: string; showName: string; minutes: number; percentage: number; playCount: number }> {
+export function getTopEpisodes(
+  plays: Play[],
+  limit: number = 25,
+  metric: Metric = 'minutes'
+): Array<{ episodeName: string; showName: string; minutes: number; percentage: number; playCount: number }> {
   const episodeMap = new Map<string, { episodeName: string; showName: string; minutes: number; count: number }>();
   
   for (const play of plays) {
@@ -98,20 +127,101 @@ export function getTopEpisodes(plays: Play[], limit: number = 25): Array<{ episo
     });
   }
   
-  const totalMinutes = Array.from(episodeMap.values()).reduce((sum, item) => sum + item.minutes, 0);
+  const totalMetric = Array.from(episodeMap.values()).reduce(
+    (sum, item) => sum + metricValue(item.minutes, item.count, metric),
+    0
+  );
   
   return Array.from(episodeMap.entries())
     .map(([key, data]) => ({
       episodeName: data.episodeName,
       showName: data.showName,
       minutes: Math.round(data.minutes),
-      percentage: totalMinutes > 0 ? (data.minutes / totalMinutes) * 100 : 0,
+      percentage:
+        totalMetric > 0
+          ? (metricValue(data.minutes, data.count, metric) / totalMetric) * 100
+          : 0,
       playCount: data.count,
     }))
-    .sort((a, b) => b.minutes - a.minutes)
+    .sort(
+      (a, b) =>
+        metricValue(b.minutes, b.playCount, metric) -
+        metricValue(a.minutes, a.playCount, metric)
+    )
     .slice(0, limit);
 }
 
+export function getTopSkippedSongs(
+  plays: Play[],
+  limit: number = 100
+): Array<{ trackName: string; artistName: string; skipCount: number; totalPlays: number; skipRate: number }> {
+  const map = new Map<
+    string,
+    { trackName: string; artistName: string; skipCount: number; totalPlays: number }
+  >();
 
+  for (const play of plays) {
+    if (play.contentType !== 'music') continue;
+    if (!play.trackName || !play.artistName) continue;
+    const key = `${play.artistName}|||${play.trackName}`;
+    const current = map.get(key) || {
+      trackName: play.trackName,
+      artistName: play.artistName,
+      skipCount: 0,
+      totalPlays: 0,
+    };
+    map.set(key, {
+      ...current,
+      skipCount: current.skipCount + (play.skipped ? 1 : 0),
+      totalPlays: current.totalPlays + 1,
+    });
+  }
 
+  return Array.from(map.values())
+    .filter((entry) => entry.skipCount > 0)
+    .map((entry) => ({
+      ...entry,
+      skipRate: entry.totalPlays > 0 ? (entry.skipCount / entry.totalPlays) * 100 : 0,
+    }))
+    .sort((a, b) => b.skipCount - a.skipCount || b.skipRate - a.skipRate)
+    .slice(0, limit);
+}
 
+export function getTopAlbums(plays: Play[], limit: number = 50, metric: Metric = 'minutes'): TopAlbum[] {
+  const albumMap = new Map<string, { albumName: string; artistName: string; minutes: number; count: number }>();
+
+  for (const play of plays) {
+    if (play.contentType !== 'music') continue;
+    if (!play.albumName || !play.artistName) continue;
+    const key = `${play.artistName}|||${play.albumName}`;
+    const current = albumMap.get(key) || { albumName: play.albumName, artistName: play.artistName, minutes: 0, count: 0 };
+    albumMap.set(key, {
+      ...current,
+      minutes: current.minutes + play.msPlayed / 60000,
+      count: current.count + 1,
+    });
+  }
+
+  const totalMetric = Array.from(albumMap.values()).reduce(
+    (sum, item) => sum + metricValue(item.minutes, item.count, metric),
+    0
+  );
+
+  return Array.from(albumMap.entries())
+    .map(([key, data]) => ({
+      albumName: data.albumName,
+      artistName: data.artistName,
+      minutes: Math.round(data.minutes),
+      playCount: data.count,
+      percentage:
+        totalMetric > 0
+          ? (metricValue(data.minutes, data.count, metric) / totalMetric) * 100
+          : 0,
+    }))
+    .sort(
+      (a, b) =>
+        metricValue(b.minutes, b.playCount, metric) -
+        metricValue(a.minutes, a.playCount, metric)
+    )
+    .slice(0, limit);
+}

@@ -1,15 +1,20 @@
 import { Play } from '@/types';
 
+type Metric = 'minutes' | 'plays';
+
+const metricValue = (play: Play, metric: Metric) =>
+  metric === 'minutes' ? play.msPlayed / 60000 : 1;
+
 /**
  * Aggregate plays by day
  */
-export function aggregateByDay(plays: Play[]): Map<string, number> {
+export function aggregateByDay(plays: Play[], metric: Metric = 'minutes'): Map<string, number> {
   const map = new Map<string, number>();
   
   for (const play of plays) {
     const dateKey = play.timestamp.toISOString().split('T')[0];
     const current = map.get(dateKey) || 0;
-    map.set(dateKey, current + play.msPlayed / 60000); // Convert to minutes
+    map.set(dateKey, current + metricValue(play, metric));
   }
   
   return map;
@@ -18,7 +23,7 @@ export function aggregateByDay(plays: Play[]): Map<string, number> {
 /**
  * Aggregate plays by month
  */
-export function aggregateByMonth(plays: Play[]): Map<string, number> {
+export function aggregateByMonth(plays: Play[], metric: Metric = 'minutes'): Map<string, number> {
   const map = new Map<string, number>();
   
   for (const play of plays) {
@@ -26,7 +31,7 @@ export function aggregateByMonth(plays: Play[]): Map<string, number> {
     const month = play.timestamp.getMonth() + 1;
     const key = `${year}-${month.toString().padStart(2, '0')}`;
     const current = map.get(key) || 0;
-    map.set(key, current + play.msPlayed / 60000);
+    map.set(key, current + metricValue(play, metric));
   }
   
   return map;
@@ -35,13 +40,13 @@ export function aggregateByMonth(plays: Play[]): Map<string, number> {
 /**
  * Aggregate plays by year
  */
-export function aggregateByYear(plays: Play[]): Map<number, number> {
+export function aggregateByYear(plays: Play[], metric: Metric = 'minutes'): Map<number, number> {
   const map = new Map<number, number>();
   
   for (const play of plays) {
     const year = play.timestamp.getFullYear();
     const current = map.get(year) || 0;
-    map.set(year, current + play.msPlayed / 60000);
+    map.set(year, current + metricValue(play, metric));
   }
   
   return map;
@@ -50,13 +55,13 @@ export function aggregateByYear(plays: Play[]): Map<number, number> {
 /**
  * Aggregate plays by hour of day
  */
-export function aggregateByHour(plays: Play[]): Map<number, number> {
+export function aggregateByHour(plays: Play[], metric: Metric = 'minutes'): Map<number, number> {
   const map = new Map<number, number>();
   
   for (const play of plays) {
     const hour = play.timestamp.getHours();
     const current = map.get(hour) || 0;
-    map.set(hour, current + play.msPlayed / 60000);
+    map.set(hour, current + metricValue(play, metric));
   }
   
   return map;
@@ -101,7 +106,6 @@ export function aggregateByTrack(plays: Play[]): Map<string, { trackName: string
   
   return map;
 }
-
 
 
 

@@ -4,13 +4,17 @@ import { aggregateByMonth } from '../aggregators';
 export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
   // Group plays by artist
   const artistPlays = new Map<string, Play[]>();
+  const allMusicPlays: Play[] = [];
   
   for (const play of plays) {
     if (!play.artistName || play.contentType !== 'music') continue;
-    
+    allMusicPlays.push(play);
     const current = artistPlays.get(play.artistName) || [];
     artistPlays.set(play.artistName, [...current, play]);
   }
+
+  // Precompute monthly totals for all music once to avoid repeated work per artist
+  const allMonthlyData = aggregateByMonth(allMusicPlays);
   
   const phases: Phase[] = [];
   
@@ -20,10 +24,6 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
     
     // Calculate total listening time for this artist
     const totalArtistMinutes = artistPlayList.reduce((sum, play) => sum + play.msPlayed / 60000, 0);
-    
-    // Calculate total listening time per month (all music)
-    const allMusicPlays = plays.filter((p) => p.contentType === 'music');
-    const allMonthlyData = aggregateByMonth(allMusicPlays);
     
     // Find consecutive months where artist exceeds threshold percentage
     const sortedMonths = Array.from(monthlyData.entries())
@@ -99,7 +99,6 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
     .sort((a, b) => b.intensity - a.intensity)
     .slice(0, 5);
 }
-
 
 
 

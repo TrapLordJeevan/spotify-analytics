@@ -19,23 +19,31 @@ export function parsePlayRecord(
   const timestamp = new Date(timestampStr);
 
   // Extract track/artist info (handle different field name variations)
-  const trackName = record.trackName || 
-                   record.master_metadata_track_name || 
-                   record.track_name || 
+  const trackName = record.trackName ||
+                   record.master_metadata_track_name ||
+                   record.track_name ||
+                   record.episode_name ||
+                   record.episodeName ||
+                   record.episode_show_name ||
+                   record.show_name ||
                    null;
   
-  const artistName = record.artistName || 
-                    record.master_metadata_artist_name || 
-                    record.artist_name || 
+  const artistName = record.artistName ||
+                    record.master_metadata_artist_name ||
+                    record.master_metadata_album_artist_name ||
+                    record.artist_name ||
+                    record.episode_show_name ||
+                    record.show_name ||
                     null;
   
-  const albumName = record.albumName || 
-                   record.master_metadata_album_name || 
-                   record.album_name || 
+  const albumName = record.albumName ||
+                   record.master_metadata_album_name ||
+                   record.master_metadata_album_album_name ||
+                   record.album_name ||
                    null;
 
   // Extract URI
-  const spotifyTrackUri = record.spotify_uri || record.spotifyUri || null;
+  const spotifyTrackUri = record.spotify_uri || record.spotify_track_uri || record.spotifyUri || null;
 
   // Extract artist ID from URI if present (e.g., spotify:artist:4Z8W4fKeB5YxbusRsdQVPb)
   let artistId: string | null = null;
@@ -56,6 +64,7 @@ export function parsePlayRecord(
 
   // Extract play duration
   const msPlayed = record.msPlayed || record.ms_played || 0;
+  const skipped = record.skipped === true;
 
   // Skip if no play time
   if (msPlayed <= 0) {
@@ -80,6 +89,7 @@ export function parsePlayRecord(
     contentType,
     sourceId,
     username,
+    skipped,
   };
 }
 
@@ -94,7 +104,5 @@ export function parsePlayRecords(
     .map(record => parsePlayRecord(record, sourceId))
     .filter((play): play is Play => play !== null);
 }
-
-
 
 
