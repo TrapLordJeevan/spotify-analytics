@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   background-color: #f8fafc;
+}
+
+:root.dark {
+  color-scheme: dark;
+  background-color: #0f172a;
 }
 
 body {
@@ -13,6 +18,12 @@ body {
     'Segoe UI', sans-serif;
   color: #0f172a;
   background-color: #f8fafc;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  color: #f1f5f9;
+  background-color: #0f172a;
 }
 
 a {
