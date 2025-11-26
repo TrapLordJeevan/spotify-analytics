@@ -11,6 +11,7 @@ import { useDataStore } from '@/store/useDataStore';
 export default function StoryPage() {
   const plays = useDataStore((state) => state.getFilteredPlays());
   const hasAnyData = useDataStore((state) => state.plays.length > 0);
+  const metric = useDataStore((state) => state.filters.metric);
 
   return (
     <MainLayout
@@ -21,11 +22,11 @@ export default function StoryPage() {
       {hasAnyData ? (
         <div className="space-y-6">
           <StoryCard title="Year-by-year highlights" eyebrow="Timeline">
-            <YearTimeline plays={plays} />
+            <YearTimeline plays={plays} metric={metric} />
           </StoryCard>
 
           <StoryCard title="Artist phases" eyebrow="Obsessions">
-            <PhaseHighlight plays={plays} />
+            <PhaseHighlight plays={plays} metric={metric} />
           </StoryCard>
 
           <StoryCard title="Rediscoveries" eyebrow="Comebacks">
@@ -55,7 +56,6 @@ function EmptyState() {
     </div>
   );
 }
-
 
 
 

@@ -38,13 +38,12 @@ export function StreaksCard({ plays }: StreaksCardProps) {
         </div>
       </div>
       <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-        Last listened:{' '}
+        Last listened across selected uploads:{' '}
         {streaks.lastListeningDate ? intlDate.format(streaks.lastListeningDate) : '—'}
       </p>
     </div>
   );
 }
-
 
 
 

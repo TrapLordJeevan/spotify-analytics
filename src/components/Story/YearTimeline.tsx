@@ -5,9 +5,10 @@ import type { Play } from '@/types';
 
 interface YearTimelineProps {
   plays: Play[];
+  metric: 'minutes' | 'plays';
 }
 
-export function YearTimeline({ plays }: YearTimelineProps) {
+export function YearTimeline({ plays, metric }: YearTimelineProps) {
   const timeline = useMemo(() => {
     const yearMap = new Map<number, Map<string, number>>();
 
@@ -15,7 +16,8 @@ export function YearTimeline({ plays }: YearTimelineProps) {
       if (!play.artistName) continue;
       const year = play.timestamp.getFullYear();
       const artistMap = yearMap.get(year) || new Map();
-      artistMap.set(play.artistName, (artistMap.get(play.artistName) || 0) + play.msPlayed);
+      const value = metric === 'minutes' ? play.msPlayed / 60000 : 1;
+      artistMap.set(play.artistName, (artistMap.get(play.artistName) || 0) + value);
       yearMap.set(year, artistMap);
     }
 
@@ -28,10 +30,10 @@ export function YearTimeline({ plays }: YearTimelineProps) {
         return {
           year,
           artistName: topArtist ? topArtist[0] : 'Unknown',
-          minutes: topArtist ? Math.round(topArtist[1] / 60000) : 0,
+          value: topArtist ? Math.round(topArtist[1]) : 0,
         };
       });
-  }, [plays]);
+  }, [plays, metric]);
 
   if (timeline.length === 0) {
     return (
@@ -52,12 +54,13 @@ export function YearTimeline({ plays }: YearTimelineProps) {
             {entry.year}
           </p>
           <p className="mt-2 text-lg font-semibold text-slate-100">{entry.artistName}</p>
-          <p className="text-sm text-slate-300">{entry.minutes} minutes</p>
+          <p className="text-sm text-slate-300">
+            {entry.value} {metric === 'minutes' ? 'minutes' : 'plays'}
+          </p>
         </div>
       ))}
     </div>
   );
 }
-
 
 

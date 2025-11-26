@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Play, Source, FilterState } from '@/types';
+import { idbStorage } from '@/lib/idbStorage';
 
 type SourceToggleMode = 'enable' | 'disable' | 'toggle';
 
@@ -209,7 +210,7 @@ export const useDataStore = create<DataStore>()(
     }),
     {
       name: 'spotify-analytics-store',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => idbStorage as any),
       partialize: (state) =>
         ({
           sources: state.sources,

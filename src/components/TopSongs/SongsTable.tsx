@@ -229,10 +229,10 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
                 }}
               >
                 <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{(currentPage - 1) * perPage + index + 1}</td>
-                <td className="px-4 py-2 font-medium">
+                <td className="px-4 py-2 font-medium max-w-[220px] truncate" title={row.type === 'song' ? row.trackName : row.episodeName}>
                   {row.type === 'song' ? row.trackName : row.episodeName}
                 </td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-2 max-w-[200px] truncate" title={row.type === 'song' ? row.artistName : row.showName}>
                   {row.type === 'song' ? row.artistName : row.showName}
                 </td>
                 <td className="px-4 py-2 text-right">

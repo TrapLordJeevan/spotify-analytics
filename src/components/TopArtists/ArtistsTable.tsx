@@ -201,7 +201,9 @@ export function ArtistsTable({ plays, limit = 0, metric }: ArtistsTableProps) {
                 <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
                   {(currentPage - 1) * perPage + index + 1}
                 </td>
-                <td className="px-4 py-2 font-medium">{artist.artistName}</td>
+                <td className="px-4 py-2 font-medium max-w-[220px] truncate" title={artist.artistName}>
+                  {artist.artistName}
+                </td>
                 <td className="px-4 py-2 text-right">
                   {metric === 'minutes' ? Math.round(artist.minutes) : artist.playCount}
                 </td>

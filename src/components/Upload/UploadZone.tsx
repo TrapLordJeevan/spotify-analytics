@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { parsePlayRecords } from '@/lib/dataParser';
 import { extractHistoryFromZip, parseJsonFile } from '@/lib/zipParser';
 import { useDataStore } from '@/store/useDataStore';
+import type { Play } from '@/types';
 
 interface UploadZoneProps {
   onUploadComplete?: (options: { hadExistingData: boolean }) => void;
@@ -145,6 +146,19 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
     return label;
   }, []);
 
+  const dedupePlays = (plays: Play[]): Play[] => {
+    const seen = new Set<string>();
+    return plays.filter((p) => {
+      const key =
+        p.spotifyTrackUri && p.timestamp
+          ? `${p.timestamp.getTime()}|${p.spotifyTrackUri}|${p.sourceId}`
+          : `${p.timestamp.getTime()}|${p.artistName ?? ''}|${p.trackName ?? ''}|${p.sourceId}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
   const mergeYearRanges = (ranges: Array<YearRange | undefined>): YearRange => {
     let min = Infinity;
     let max = -Infinity;
@@ -213,7 +227,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
           const username = detectUsername(records);
           const yearRange = mergeYearRanges([getYearRange(records), yearRangeFromHints(fileHints)]);
           const name = buildSourceName(file, username, yearRange, fileHints);
-          const plays = parsePlayRecords(records, sourceId);
+          const plays = dedupePlays(parsePlayRecords(records, sourceId));
 
           if (plays.length === 0) {
             continue;

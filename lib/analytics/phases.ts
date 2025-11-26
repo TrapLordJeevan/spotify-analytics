@@ -1,7 +1,7 @@
 import { Play, Phase } from '@/types';
 import { aggregateByMonth } from '../aggregators';
 
-export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
+export function detectPhases(plays: Play[], threshold: number = 5, metric: 'minutes' | 'plays' = 'minutes'): Phase[] {
   // Group plays by artist
   const artistPlays = new Map<string, Play[]>();
   const allMusicPlays: Play[] = [];
@@ -14,13 +14,13 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
   }
 
   // Precompute monthly totals for all music once to avoid repeated work per artist
-  const allMonthlyData = aggregateByMonth(allMusicPlays);
+  const allMonthlyData = aggregateByMonth(allMusicPlays, metric);
   
   const phases: Phase[] = [];
   
   for (const [artistName, artistPlayList] of artistPlays.entries()) {
     // Aggregate by month for this artist
-    const monthlyData = aggregateByMonth(artistPlayList);
+    const monthlyData = aggregateByMonth(artistPlayList, metric);
     
     // Find consecutive months where artist exceeds threshold percentage
     const sortedMonths = Array.from(monthlyData.entries())
@@ -96,5 +96,4 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
     .sort((a, b) => b.intensity - a.intensity)
     .slice(0, 5);
 }
-
 

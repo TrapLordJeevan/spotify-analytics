@@ -6,10 +6,11 @@ import type { Play } from '@/types';
 
 interface PhaseHighlightProps {
   plays: Play[];
+  metric: 'minutes' | 'plays';
 }
 
-export function PhaseHighlight({ plays }: PhaseHighlightProps) {
-  const phases = useMemo(() => detectPhases(plays), [plays]);
+export function PhaseHighlight({ plays, metric }: PhaseHighlightProps) {
+  const phases = useMemo(() => detectPhases(plays, 5, metric), [plays, metric]);
 
   if (phases.length === 0) {
     return (
@@ -41,6 +42,5 @@ const formatMonth = ({ year, month }: { year: number; month: number }) =>
     month: 'short',
     year: 'numeric',
   });
-
 
 

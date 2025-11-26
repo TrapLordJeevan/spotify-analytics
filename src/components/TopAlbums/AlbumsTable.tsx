@@ -191,8 +191,12 @@ export function AlbumsTable({ plays, metric }: AlbumsTableProps) {
                 <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
                   {(currentPage - 1) * perPage + index + 1}
                 </td>
-                <td className="px-4 py-2 font-medium">{album.albumName}</td>
-                <td className="px-4 py-2">{album.artistName}</td>
+                <td className="px-4 py-2 font-medium max-w-[220px] truncate" title={album.albumName}>
+                  {album.albumName}
+                </td>
+                <td className="px-4 py-2 max-w-[200px] truncate" title={album.artistName}>
+                  {album.artistName}
+                </td>
                 <td className="px-4 py-2 text-right">
                   {metric === 'minutes' ? Math.round(album.minutes) : album.playCount}
                 </td>

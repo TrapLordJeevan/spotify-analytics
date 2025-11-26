@@ -16,10 +16,12 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+type MockFn = jest.Mock<unknown, unknown[]>;
+
 type MockState = {
-  addSource: jest.Mock;
-  addPlays: jest.Mock;
-  hasData: jest.Mock;
+  addSource: MockFn;
+  addPlays: MockFn;
+  hasData: MockFn;
   sources: unknown[];
   plays: unknown[];
   filters: {
@@ -28,13 +30,13 @@ type MockState = {
     metric: 'minutes' | 'plays';
     dateRange: { type: 'all' };
   };
-  updateSourceName: jest.Mock;
-  setSourceEnabled: jest.Mock;
-  setAllSourcesEnabled: jest.Mock;
-  setFilters: jest.Mock;
-  resetFilters: jest.Mock;
-  clearAllData: jest.Mock;
-  getFilteredPlays: jest.Mock;
+  updateSourceName: MockFn;
+  setSourceEnabled: MockFn;
+  setAllSourcesEnabled: MockFn;
+  setFilters: MockFn;
+  resetFilters: MockFn;
+  clearAllData: MockFn;
+  getFilteredPlays: MockFn;
 };
 
 const mockUseDataStore = useDataStore as unknown as jest.Mock;
