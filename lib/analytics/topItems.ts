@@ -30,7 +30,7 @@ export function getTopSongs(plays: Play[], limit: number = 25, metric: Metric = 
   );
   
   return Array.from(trackMap.entries())
-    .map(([key, data]) => ({
+    .map(([, data]) => ({
       trackName: data.trackName,
       artistName: data.artistName,
       minutes: Math.round(data.minutes),
@@ -133,7 +133,7 @@ export function getTopEpisodes(
   );
   
   return Array.from(episodeMap.entries())
-    .map(([key, data]) => ({
+    .map(([, data]) => ({
       episodeName: data.episodeName,
       showName: data.showName,
       minutes: Math.round(data.minutes),
@@ -208,7 +208,7 @@ export function getTopAlbums(plays: Play[], limit: number = 50, metric: Metric =
   );
 
   return Array.from(albumMap.entries())
-    .map(([key, data]) => ({
+    .map(([, data]) => ({
       albumName: data.albumName,
       artistName: data.artistName,
       minutes: Math.round(data.minutes),

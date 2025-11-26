@@ -1,12 +1,14 @@
-import { Play, ContentType } from '@/types';
+import { Play } from '@/types';
 import { classifyContentType } from './contentClassifier';
+
+type RawRecord = Record<string, unknown>;
 
 /**
  * Parse a single Spotify streaming history record into our Play format
  * Discards privacy-sensitive fields (IP, user agent, device IDs, etc.)
  */
 export function parsePlayRecord(
-  record: any,
+  record: RawRecord,
   sourceId: string
 ): Play | null {
   // Skip if no meaningful data
@@ -16,46 +18,57 @@ export function parsePlayRecord(
 
   // Extract timestamp
   const timestampStr = record.ts || record.endTime;
-  const timestamp = new Date(timestampStr);
+  const timestamp = timestampStr ? new Date(timestampStr as string) : null;
+  if (!timestamp || isNaN(timestamp.getTime())) return null;
+
+  const getString = (key: string): string | null => {
+    const value = record[key];
+    return typeof value === 'string' ? value : null;
+  };
 
   // Extract track/artist info (handle different field name variations)
-  const trackName = record.trackName ||
-                   record.master_metadata_track_name ||
-                   record.track_name ||
-                   record.episode_name ||
-                   record.episodeName ||
-                   record.episode_show_name ||
-                   record.show_name ||
-                   null;
+  const trackName =
+    getString('trackName') ||
+    getString('master_metadata_track_name') ||
+    getString('track_name') ||
+    getString('episode_name') ||
+    getString('episodeName') ||
+    getString('episode_show_name') ||
+    getString('show_name') ||
+    null;
   
-  const artistName = record.artistName ||
-                    record.master_metadata_artist_name ||
-                    record.master_metadata_album_artist_name ||
-                    record.artist_name ||
-                    record.episode_show_name ||
-                    record.show_name ||
-                    null;
+  const artistName =
+    getString('artistName') ||
+    getString('master_metadata_artist_name') ||
+    getString('master_metadata_album_artist_name') ||
+    getString('artist_name') ||
+    getString('episode_show_name') ||
+    getString('show_name') ||
+    null;
   
-  const albumName = record.albumName ||
-                   record.master_metadata_album_name ||
-                   record.master_metadata_album_album_name ||
-                   record.album_name ||
-                   null;
+  const albumName =
+    getString('albumName') ||
+    getString('master_metadata_album_name') ||
+    getString('master_metadata_album_album_name') ||
+    getString('album_name') ||
+    null;
 
   // Extract URI
-  const spotifyTrackUri = record.spotify_uri || record.spotify_track_uri || record.spotifyUri || null;
+  const spotifyTrackUri =
+    getString('spotify_uri') || getString('spotify_track_uri') || getString('spotifyUri');
 
   // Extract artist ID from URI if present (e.g., spotify:artist:4Z8W4fKeB5YxbusRsdQVPb)
   let artistId: string | null = null;
   if (spotifyTrackUri) {
     // Try to extract artist ID from track URI's metadata or look for separate artist_uri field
-    const artistUri = record.spotify_artist_uri || record.artist_uri || null;
+    const artistUri = getString('spotify_artist_uri') || getString('artist_uri');
     if (artistUri && artistUri.startsWith('spotify:artist:')) {
       artistId = artistUri.replace('spotify:artist:', '');
     }
     // Alternative: some exports might have master_metadata_album_artist_uri
-    if (!artistId && record.master_metadata_album_artist_uri) {
-      const uri = record.master_metadata_album_artist_uri;
+    const albumArtistUri = getString('master_metadata_album_artist_uri');
+    if (!artistId && albumArtistUri) {
+      const uri = albumArtistUri;
       if (uri.startsWith('spotify:artist:')) {
         artistId = uri.replace('spotify:artist:', '');
       }
@@ -63,7 +76,7 @@ export function parsePlayRecord(
   }
 
   // Extract play duration
-  const msPlayed = record.msPlayed || record.ms_played || 0;
+  const msPlayed = (record.msPlayed as number | undefined) || (record.ms_played as number | undefined) || 0;
   const skipped = record.skipped === true;
 
   // Skip if no play time
@@ -75,7 +88,7 @@ export function parsePlayRecord(
   const contentType = classifyContentType(record);
 
   // Extract username if present (optional)
-  const username = record.username || record.user_name || null;
+  const username = getString('username') || getString('user_name');
 
   return {
     id: `${sourceId}-${timestamp.getTime()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -97,12 +110,10 @@ export function parsePlayRecord(
  * Parse an array of Spotify streaming history records
  */
 export function parsePlayRecords(
-  records: any[],
+  records: unknown[],
   sourceId: string
 ): Play[] {
   return records
-    .map(record => parsePlayRecord(record, sourceId))
+    .map(record => parsePlayRecord(record as RawRecord, sourceId))
     .filter((play): play is Play => play !== null);
 }
-
-

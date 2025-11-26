@@ -104,7 +104,7 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
       const cmp = (aVal as number) - (bVal as number);
       return sortDir === 'asc' ? cmp : -cmp;
     });
-  }, [filteredRows, sortKey, sortDir, rows]);
+  }, [filteredRows, sortKey, sortDir]);
 
   const toggleSort = (key: typeof sortKey) => {
     if (sortKey === key) {
@@ -249,7 +249,7 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
             {filteredRows.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
-                  No results match "{query}".
+                  No results match “{query}”.
                 </td>
               </tr>
             )}

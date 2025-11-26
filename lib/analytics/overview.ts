@@ -39,7 +39,7 @@ export function getTopSongs(plays: Play[], limit: number = 5, metric: Metric = '
   );
   
   return Array.from(trackMap.entries())
-    .map(([key, data]) => ({
+    .map(([, data]) => ({
       trackName: data.trackName,
       artistName: data.artistName,
       minutes: Math.round(data.minutes),
@@ -202,6 +202,5 @@ export function calculateStreaks(plays: Play[]): StreakData {
     lastListeningDate: lastDate,
   };
 }
-
 
 

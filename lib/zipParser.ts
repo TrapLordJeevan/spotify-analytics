@@ -3,9 +3,9 @@ import JSZip from 'jszip';
 /**
  * Extract Streaming_History JSON files from a ZIP archive
  */
-export async function extractHistoryFromZip(zipFile: File): Promise<{ filename: string; content: any[] }[]> {
+export async function extractHistoryFromZip(zipFile: File): Promise<{ filename: string; content: unknown[] }[]> {
   const zip = await JSZip.loadAsync(zipFile);
-  const results: { filename: string; content: any[] }[] = [];
+  const results: { filename: string; content: unknown[] }[] = [];
 
   // Find all files matching Streaming_History pattern
   const historyFiles = Object.keys(zip.files).filter(filename => 
@@ -37,14 +37,13 @@ export async function extractHistoryFromZip(zipFile: File): Promise<{ filename: 
 /**
  * Parse a JSON file directly
  */
-export async function parseJsonFile(file: File): Promise<any[]> {
+export async function parseJsonFile(file: File): Promise<unknown[]> {
   const text = await file.text();
   const json = JSON.parse(text);
   
   // Handle both array and object formats
   return Array.isArray(json) ? json : (json.items || []);
 }
-
 
 
 

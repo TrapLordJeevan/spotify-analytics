@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Play, Source, FilterState } from '@/types';
-import { idbStorage } from '@/lib/idbStorage';
 
 type SourceToggleMode = 'enable' | 'disable' | 'toggle';
 
@@ -210,16 +209,13 @@ export const useDataStore = create<DataStore>()(
     }),
     {
       name: 'spotify-analytics-store',
-      storage: {
-        getItem: (name) => idbStorage.getItem(name),
-        setItem: (name, value) => idbStorage.setItem(name, value),
-        removeItem: (name) => idbStorage.removeItem(name),
-      },
-      partialize: (state) => ({
-        sources: state.sources,
-        plays: state.plays,
-        filters: state.filters,
-      }),
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) =>
+        ({
+          sources: state.sources,
+          plays: state.plays,
+          filters: state.filters,
+        } as unknown as typeof state),
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Restore Date instances

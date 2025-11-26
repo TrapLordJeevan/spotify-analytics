@@ -22,9 +22,6 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
     // Aggregate by month for this artist
     const monthlyData = aggregateByMonth(artistPlayList);
     
-    // Calculate total listening time for this artist
-    const totalArtistMinutes = artistPlayList.reduce((sum, play) => sum + play.msPlayed / 60000, 0);
-    
     // Find consecutive months where artist exceeds threshold percentage
     const sortedMonths = Array.from(monthlyData.entries())
       .map(([key, minutes]) => {
@@ -99,6 +96,5 @@ export function detectPhases(plays: Play[], threshold: number = 5): Phase[] {
     .sort((a, b) => b.intensity - a.intensity)
     .slice(0, 5);
 }
-
 
 

@@ -3,6 +3,7 @@ import { ContentType } from '@/types';
 /**
  * Classifies a Spotify play record as music, podcast, or other
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function classifyContentType(record: any): ContentType {
   // Check for podcast indicators
   if (record.episode_name || record.episode_show_name || record.show_name) {
@@ -16,7 +17,5 @@ export function classifyContentType(record: any): ContentType {
   
   return 'other';
 }
-
-
 
 

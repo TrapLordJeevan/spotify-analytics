@@ -206,7 +206,7 @@ describe('dataParser', () => {
     });
 
     it('should handle empty arrays', () => {
-      const records: any[] = [];
+      const records: unknown[] = [];
       const sourceId = 'test-source-8';
 
       const result = parsePlayRecords(records, sourceId);

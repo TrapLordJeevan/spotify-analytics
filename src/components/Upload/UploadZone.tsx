@@ -46,24 +46,26 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
     return null;
   };
 
-  const detectUsername = (records: any[]): string | null => {
+  const detectUsername = (records: unknown[]): string | null => {
     for (const record of records) {
-      if (typeof record.username === 'string') return record.username;
-      if (typeof record.user_name === 'string') return record.user_name;
-      if (typeof record.platformUserName === 'string') return record.platformUserName;
-      if (typeof record.accountName === 'string') return record.accountName;
+      const rec = record as Record<string, unknown>;
+      if (typeof rec.username === 'string') return rec.username;
+      if (typeof rec.user_name === 'string') return rec.user_name;
+      if (typeof rec.platformUserName === 'string') return rec.platformUserName;
+      if (typeof rec.accountName === 'string') return rec.accountName;
     }
     return null;
   };
 
-  const getYearRange = (records: any[]): YearRange => {
+  const getYearRange = (records: unknown[]): YearRange => {
     let min = Infinity;
     let max = -Infinity;
 
     for (const record of records) {
-      const ts = record.ts || record.endTime;
+      const rec = record as Record<string, unknown>;
+      const ts = rec.ts || rec.endTime;
       if (!ts) continue;
-      const date = new Date(ts);
+      const date = new Date(ts as string);
       if (isNaN(date.getTime())) continue;
       const year = date.getFullYear();
       if (year < min) min = year;
@@ -88,7 +90,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
     };
   };
 
-  const buildSourceName = (
+  const buildSourceName = useCallback((
     file: File,
     username?: string | null,
     yearRange?: YearRange,
@@ -141,7 +143,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
       return `${username} • ${label}`;
     }
     return label;
-  };
+  }, []);
 
   const mergeYearRanges = (ranges: Array<YearRange | undefined>): YearRange => {
     let min = Infinity;
@@ -250,7 +252,7 @@ export function UploadZone({ onUploadComplete }: UploadZoneProps) {
         setIsProcessing(false);
       }
     },
-    [addPlays, addSource, hasData, onUploadComplete, router]
+    [addPlays, addSource, hasData, onUploadComplete, router, buildSourceName]
   );
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {

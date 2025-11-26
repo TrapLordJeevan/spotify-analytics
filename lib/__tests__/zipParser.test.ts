@@ -15,9 +15,9 @@ describe('zipParser', () => {
       zip.file('Streaming_History_podcast_2023.json', JSON.stringify([testData[0]]));
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -34,9 +34,9 @@ describe('zipParser', () => {
       zip.file('random.json', JSON.stringify({ data: 'test' }));
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -49,9 +49,9 @@ describe('zipParser', () => {
       zip.file('Streaming_History_music_2023.json', JSON.stringify(testData));
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -65,9 +65,9 @@ describe('zipParser', () => {
       zip.file('Streaming_History_music_2023.json', JSON.stringify(testData));
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -85,9 +85,9 @@ describe('zipParser', () => {
       }
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -100,9 +100,9 @@ describe('zipParser', () => {
       zip.file('Streaming_History_music_2024.json', JSON.stringify([{ endTime: '2024-01-01', artistName: 'Artist', trackName: 'Track', msPlayed: 1000 }]));
 
       const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-      const zipFile = new File([zipBuffer], 'test.zip', { type: 'application/zip' });
+    const zipFile = new File([zipBuffer as BlobPart], 'test.zip', { type: 'application/zip' });
       // Ensure buffer is accessible for polyfill
-      (zipFile as any)._parts = [zipBuffer];
+      (zipFile as unknown as { _parts: BlobPart[] })._parts = [zipBuffer as BlobPart];
 
       const result = await extractHistoryFromZip(zipFile);
 
@@ -120,7 +120,7 @@ describe('zipParser', () => {
       const jsonString = JSON.stringify(testData);
       const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
       // Store parts for polyfill
-      (jsonFile as any)._parts = [jsonString];
+      (jsonFile as unknown as { _parts: BlobPart[] })._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
@@ -136,7 +136,7 @@ describe('zipParser', () => {
       const jsonString = JSON.stringify(testData);
       const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
       // Store parts for polyfill
-      (jsonFile as any)._parts = [jsonString];
+      (jsonFile as unknown as { _parts: BlobPart[] })._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
@@ -147,7 +147,7 @@ describe('zipParser', () => {
       const jsonString = JSON.stringify([]);
       const jsonFile = new File([jsonString], 'test.json', { type: 'application/json' });
       // Store parts for polyfill
-      (jsonFile as any)._parts = [jsonString];
+      (jsonFile as unknown as { _parts: BlobPart[] })._parts = [jsonString];
 
       const result = await parseJsonFile(jsonFile);
 
@@ -155,4 +155,3 @@ describe('zipParser', () => {
     });
   });
 });
-

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useDeferredValue } from 'react';
 import { getTopArtists } from '@/lib/analytics/topItems';
-import type { Play, TopArtist } from '@/types';
+import type { Play } from '@/types';
 
 interface ArtistsTableProps {
   plays: Play[];
@@ -64,7 +64,7 @@ export function ArtistsTable({ plays, limit = 0, metric }: ArtistsTableProps) {
       const cmp = (aVal as number) - (bVal as number);
       return sortDir === 'asc' ? cmp : -cmp;
     });
-  }, [filteredRows, sortKey, sortDir, rows]);
+  }, [filteredRows, sortKey, sortDir]);
 
   const toggleSort = (key: typeof sortKey) => {
     if (sortKey === key) {

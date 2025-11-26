@@ -198,8 +198,8 @@ export function FilterBar() {
                 key={preset.id}
                 type="button"
                 onClick={() => handleDatePreset(preset.id)}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
-                  filters.dateRange.type === preset.id && filters.dateRange.type !== 'custom'
+                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
+                  filters.dateRange.type === preset.id
                     ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100'
                     : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}

@@ -43,7 +43,7 @@ export default function UploadPage() {
         <div>
           <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Sources</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Each upload becomes a Source. Rename them (e.g., "Main account", "Family plan account") and disable any you don't want included in analytics.
+            Each upload becomes a Source. Rename them (e.g., &quot;Main account&quot;, &quot;Family plan account&quot;) and disable any you don&apos;t want included in analytics.
           </p>
           <div className="mt-4">
             <SourceManager />
@@ -53,6 +53,5 @@ export default function UploadPage() {
     </MainLayout>
   );
 }
-
 
 

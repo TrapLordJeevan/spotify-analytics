@@ -1,4 +1,5 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { UploadZone } from '../UploadZone';
 import { useDataStore } from '@/store/useDataStore';
@@ -15,7 +16,28 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-const mockUseDataStore = useDataStore as jest.MockedFunction<typeof useDataStore>;
+type MockState = {
+  addSource: jest.Mock;
+  addPlays: jest.Mock;
+  hasData: jest.Mock;
+  sources: unknown[];
+  plays: unknown[];
+  filters: {
+    selectedSources: string[];
+    contentType: 'both' | 'music' | 'podcast';
+    metric: 'minutes' | 'plays';
+    dateRange: { type: 'all' };
+  };
+  updateSourceName: jest.Mock;
+  setSourceEnabled: jest.Mock;
+  setAllSourcesEnabled: jest.Mock;
+  setFilters: jest.Mock;
+  resetFilters: jest.Mock;
+  clearAllData: jest.Mock;
+  getFilteredPlays: jest.Mock;
+};
+
+const mockUseDataStore = useDataStore as unknown as jest.Mock;
 const mockExtractHistoryFromZip = extractHistoryFromZip as jest.MockedFunction<typeof extractHistoryFromZip>;
 const mockParseJsonFile = parseJsonFile as jest.MockedFunction<typeof parseJsonFile>;
 const mockParsePlayRecords = parsePlayRecords as jest.MockedFunction<typeof parsePlayRecords>;
@@ -27,11 +49,26 @@ describe('UploadZone', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseDataStore.mockImplementation((selector: any) => {
-      const state = {
+    mockUseDataStore.mockImplementation((selector: (state: MockState) => unknown) => {
+      const state: MockState = {
         addSource: mockAddSource,
         addPlays: mockAddPlays,
         hasData: mockHasData,
+        sources: [],
+        plays: [],
+        filters: {
+          selectedSources: [],
+          contentType: 'both',
+          metric: 'minutes',
+          dateRange: { type: 'all' },
+        },
+        updateSourceName: jest.fn(),
+        setSourceEnabled: jest.fn(),
+        setAllSourcesEnabled: jest.fn(),
+        setFilters: jest.fn(),
+        resetFilters: jest.fn(),
+        clearAllData: jest.fn(),
+        getFilteredPlays: jest.fn().mockReturnValue([]),
       };
       return selector(state);
     });
@@ -41,6 +78,8 @@ describe('UploadZone', () => {
         timestamp: new Date('2023-01-01'),
         artistName: 'Test Artist',
         trackName: 'Test Track',
+        albumName: null,
+        spotifyTrackUri: null,
         msPlayed: 1000,
         contentType: 'music' as const,
         sourceId: 'source-1',
@@ -154,4 +193,3 @@ describe('UploadZone', () => {
     });
   });
 });
-
