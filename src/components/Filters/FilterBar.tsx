@@ -108,22 +108,24 @@ export function FilterBar() {
     return `${year}-${month}-${day}`;
   };
 
+  const chipBase =
+    'inline-flex items-center rounded-full border px-3 py-1 text-[13px] font-semibold transition whitespace-nowrap';
+  const chipActive = 'bg-emerald-600 text-white border-emerald-600 shadow-sm';
+  const chipIdle =
+    'border-white/10 text-slate-200 bg-white/5 hover:bg-white/10';
+
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-4 shadow-sm">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Uploads
+    <div className="rounded-xl border border-white/10 bg-[#101010]/80 backdrop-blur px-3 py-2 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-300">
+            Accounts
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => setFilters({ selectedSources: [] })}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
-                isAllSourcesSelected
-                  ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
-              }`}
+              className={`${chipBase} ${isAllSourcesSelected ? chipActive : chipIdle}`}
             >
               All accounts
             </button>
@@ -131,10 +133,8 @@ export function FilterBar() {
               <button
                 type="button"
                 key={source.id}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
-                  selectedSourceIds.includes(source.id)
-                    ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                className={`${chipBase} ${
+                  selectedSourceIds.includes(source.id) ? chipActive : chipIdle
                 }`}
                 onClick={() => toggleSource(source.id)}
               >
@@ -144,20 +144,18 @@ export function FilterBar() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Content type
+        <div className="flex items-center gap-1.5">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-300">
+            Content
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {(['both', 'music', 'podcast'] as const).map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => handleContentToggle(type)}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition border ${
-                  filters.contentType === type
-                    ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                className={`${chipBase} capitalize ${
+                  filters.contentType === type ? chipActive : chipIdle
                 }`}
               >
                 {type}
@@ -166,20 +164,18 @@ export function FilterBar() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-300">
             Metric
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {(['minutes', 'plays'] as const).map((metric) => (
               <button
                 key={metric}
                 type="button"
                 onClick={() => handleMetricToggle(metric)}
-                className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition border ${
-                  filters.metric === metric
-                    ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                className={`${chipBase} capitalize ${
+                  filters.metric === metric ? chipActive : chipIdle
                 }`}
               >
                 {metric}
@@ -188,70 +184,63 @@ export function FilterBar() {
           </div>
         </div>
 
-        <div className="flex-1 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Date range
+        <div className="flex flex-1 flex-wrap items-center gap-1.5">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-300">
+            Date
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {DATE_PRESETS.map((preset) => (
               <button
                 key={preset.id}
                 type="button"
                 onClick={() => handleDatePreset(preset.id)}
-                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
+                className={`${chipBase} ${
                   filters.dateRange.type === preset.id
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100'
-                    : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100'
+                    : chipIdle
                 }`}
               >
                 {preset.label}
               </button>
             ))}
-            {availableYears.length > 0 && (
-              <>
-                {availableYears.slice(0, 5).map((year) => {
-                  const isSelected = filters.dateRange.years
-                    ? filters.dateRange.years.includes(year)
-                    : filters.dateRange.type === 'custom' &&
-                      filters.dateRange.start &&
-                      filters.dateRange.end &&
-                      year >= filters.dateRange.start.getFullYear() &&
-                      year <= filters.dateRange.end.getFullYear();
-                  return (
-                    <button
-                      key={year}
-                      type="button"
-                      onClick={() => handleYearSelect(year)}
-                      className={`rounded-full px-3 py-1.5 text-sm font-medium transition border ${
-                        isSelected
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
-                      }`}
-                    >
-                      {year}
-                    </button>
-                  );
-                })}
-              </>
-            )}
+            {availableYears.length > 0 &&
+              availableYears.slice(0, 5).map((year) => {
+                const isSelected = filters.dateRange.years
+                  ? filters.dateRange.years.includes(year)
+                  : filters.dateRange.type === 'custom' &&
+                    filters.dateRange.start &&
+                    filters.dateRange.end &&
+                    year >= filters.dateRange.start.getFullYear() &&
+                    year <= filters.dateRange.end.getFullYear();
+                return (
+                  <button
+                    key={year}
+                    type="button"
+                    onClick={() => handleYearSelect(year)}
+                    className={`${chipBase} ${isSelected ? chipActive : chipIdle}`}
+                  >
+                    {year}
+                  </button>
+                );
+              })}
           </div>
-          <div className="flex flex-wrap gap-2 text-sm">
-            <label className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+            <label className="flex items-center gap-1.5">
               <span className="text-slate-500 dark:text-slate-400">From</span>
               <input
                 type="date"
                 value={formatDateInput(filters.dateRange.start)}
                 onChange={(event) => handleCustomDateChange('start', event.target.value)}
-                className="rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="h-8 rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200"
               />
             </label>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5">
               <span className="text-slate-500 dark:text-slate-400">To</span>
               <input
                 type="date"
                 value={formatDateInput(filters.dateRange.end)}
                 onChange={(event) => handleCustomDateChange('end', event.target.value)}
-                className="rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="h-8 rounded-md border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200"
               />
             </label>
           </div>

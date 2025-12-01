@@ -42,6 +42,8 @@ export function DailyChart({ plays, metric }: DailyChartProps) {
     metric === 'minutes' ? `${value.toLocaleString()}m` : `${value.toLocaleString()} plays`;
 
   useEffect(() => {
+    // Only auto-select latest year on first load; if user chooses All (undefined), keep it.
+    if (selectedYear === undefined) return;
     if (latestYear && latestYear !== selectedYear) {
       setSelectedYear(latestYear);
       setSelectedMonth(undefined);
@@ -76,13 +78,20 @@ export function DailyChart({ plays, metric }: DailyChartProps) {
             Year
             <select
               className="rounded-md border border-slate-200 px-2 py-1"
-              value={selectedYear}
+              value={selectedYear ?? ''}
               onChange={(event) => {
-                const year = Number(event.target.value);
-                setSelectedYear(year || undefined);
-                setSelectedMonth(undefined);
+                const value = event.target.value;
+                if (value === 'all') {
+                  setSelectedYear(undefined);
+                  setSelectedMonth(undefined);
+                } else {
+                  const year = Number(value);
+                  setSelectedYear(year || undefined);
+                  setSelectedMonth(undefined);
+                }
               }}
             >
+              <option value="all">All</option>
               {yearlyOptions.map((entry) => (
                 <option key={entry.year} value={entry.year}>
                   {entry.year}

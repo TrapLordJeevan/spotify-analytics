@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { FilterBar } from '@/components/Filters/FilterBar';
+import { AnalyticsLayout } from './AnalyticsLayout';
 import { useDataStore } from '@/store/useDataStore';
 import { useDarkMode } from '@/hooks/useDarkMode';
 
@@ -23,24 +24,22 @@ export function MainLayout({
   useDarkMode(); // Initialize dark mode
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-[#0a0a0a] text-slate-100">
       <Navbar />
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+      <AnalyticsLayout>
         <div className="space-y-1">
           {title && <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>}
           {description && <p className="text-base text-slate-600 dark:text-slate-400">{description}</p>}
         </div>
         {showFilters && sources.length > 0 && (
-          <div className="mt-4">
-            <FilterBar />
+          <div className="sticky top-16 z-40">
+            <section className="space-y-3 rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur px-2 py-2">
+              <FilterBar />
+            </section>
           </div>
         )}
-        <div className="mt-6">{children}</div>
-      </div>
+        <section className="space-y-4">{children}</section>
+      </AnalyticsLayout>
     </div>
   );
 }
-
-
-
-

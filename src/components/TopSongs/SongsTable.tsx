@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState, useDeferredValue } from 'react';
+import { useRouter } from 'next/navigation';
 import { getTopSongs, getTopEpisodes } from '@/lib/analytics/topItems';
+import { getSongId, getSongKeyFromNames } from '@/lib/songUtils';
 import type { Play } from '@/types';
 
 interface SongsTableProps {
@@ -14,25 +16,13 @@ interface SongsTableProps {
 const intlPercent = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
 
 export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedArtist, setSelectedArtist] = useState<string>('');
   const [sortKey, setSortKey] = useState<'rank' | 'title' | 'artist' | 'minutes' | 'plays' | 'share'>('rank');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
-  const [selectedSong, setSelectedSong] = useState<
-    | {
-        trackName: string;
-        artistName: string;
-        minutes: number;
-        playCount: number;
-        skipped: number;
-        firstPlay: Date;
-        lastPlay: Date;
-        peakDay?: { date: Date; plays: number };
-      }
-    | null
-  >(null);
 
   // Get unique artists from plays (for music mode only)
   const availableArtists = useMemo(() => {
@@ -119,30 +109,18 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
   const currentPage = Math.min(page, totalPages);
   const pagedRows = sortedRows.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-  const buildSongStats = (trackName: string, artistName: string) => {
-    const songPlays = plays.filter(
-      (p) =>
-        p.trackName === trackName &&
-        p.artistName === artistName &&
-        p.contentType === 'music'
-    );
-    if (songPlays.length === 0) return null;
-    const playCount = songPlays.length;
-    const minutes = Math.round(songPlays.reduce((sum, p) => sum + p.msPlayed / 60000, 0));
-    const skipped = songPlays.filter((p) => p.skipped).length;
-    const firstPlay = songPlays.reduce((min, p) => (p.timestamp < min ? p.timestamp : min), songPlays[0].timestamp);
-    const lastPlay = songPlays.reduce((max, p) => (p.timestamp > max ? p.timestamp : max), songPlays[0].timestamp);
-    const dayMap = new Map<string, number>();
-    songPlays.forEach((p) => {
-      const key = p.timestamp.toISOString().split('T')[0];
-      dayMap.set(key, (dayMap.get(key) || 0) + 1);
+  const songIdLookup = useMemo(() => {
+    if (mode !== 'music') return new Map<string, string>();
+    const map = new Map<string, string>();
+    plays.forEach((play) => {
+      if (play.contentType !== 'music' || !play.artistName || !play.trackName) return;
+      const key = getSongKeyFromNames(play.artistName, play.trackName);
+      if (!map.has(key)) {
+        map.set(key, getSongId(play));
+      }
     });
-    let best: { date: Date; plays: number } | undefined;
-    for (const [day, count] of dayMap.entries()) {
-      if (!best || count > best.plays) best = { date: new Date(day), plays: count };
-    }
-    return { trackName, artistName, playCount, minutes, skipped, firstPlay, lastPlay, peakDay: best };
-  };
+    return map;
+  }, [plays, mode]);
 
   return (
     <>
@@ -223,8 +201,9 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
                 className={row.type === 'song' ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/60' : undefined}
                 onClick={() => {
                   if (row.type === 'song') {
-                    const stats = buildSongStats(row.trackName, row.artistName);
-                    if (stats) setSelectedSong(stats);
+                    const key = getSongKeyFromNames(row.artistName, row.trackName);
+                    const songId = songIdLookup.get(key) || key;
+                    router.push(`/song?songId=${encodeURIComponent(songId)}`);
                   }
                 }}
               >
@@ -295,55 +274,6 @@ export function SongsTable({ plays, mode, limit = 100, metric }: SongsTableProps
         </div>
       </div>
     </div>
-      {selectedSong && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-xl">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-emerald-400">Song</p>
-                <h3 className="text-xl font-semibold text-slate-100">{selectedSong.trackName}</h3>
-                <p className="text-sm text-slate-300">{selectedSong.artistName}</p>
-              </div>
-              <button
-                onClick={() => setSelectedSong(null)}
-                className="rounded-md border border-slate-600 px-2 py-1 text-sm text-slate-200 hover:bg-slate-700"
-              >
-                Close
-              </button>
-            </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Stat label="Plays" value={selectedSong.playCount.toLocaleString()} />
-              <Stat label="Minutes" value={selectedSong.minutes.toLocaleString()} />
-              <Stat label="Skips" value={selectedSong.skipped.toLocaleString()} />
-              <Stat
-                label="First listened"
-                value={selectedSong.firstPlay.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-              />
-              <Stat
-                label="Last listened"
-                value={selectedSong.lastPlay.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-              />
-              <Stat
-                label="Peak day"
-                value={
-                  selectedSong.peakDay
-                    ? `${selectedSong.peakDay.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} (${selectedSong.peakDay.plays} plays)`
-                    : '—'
-                }
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-3">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-slate-100">{value}</p>
-    </div>
   );
 }

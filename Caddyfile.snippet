@@ -1,0 +1,23 @@
+# Add this to your Caddyfile for spotify.jeevo.xyz
+# If you're using Caddy's Docker integration, the labels in docker-compose.yml
+# should handle this automatically. Otherwise, add this snippet:
+
+spotify.jeevo.xyz {
+    reverse_proxy spotify-analytics:80
+    
+    # Optional: Add compression
+    encode zstd gzip
+    
+    # Optional: Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000;"
+        # Prevent clickjacking
+        X-Frame-Options "SAMEORIGIN"
+        # XSS Protection
+        X-Content-Type-Options "nosniff"
+        # Referrer Policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+

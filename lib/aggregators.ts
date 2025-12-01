@@ -2,6 +2,12 @@ import { Play } from '@/types';
 
 type Metric = 'minutes' | 'plays';
 
+const toDate = (value: Date | string): Date | null => {
+  if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+  const parsed = new Date(value);
+  return isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const metricValue = (play: Play, metric: Metric) =>
   metric === 'minutes' ? play.msPlayed / 60000 : 1;
 
@@ -12,7 +18,9 @@ export function aggregateByDay(plays: Play[], metric: Metric = 'minutes'): Map<s
   const map = new Map<string, number>();
   
   for (const play of plays) {
-    const dateKey = play.timestamp.toISOString().split('T')[0];
+    const ts = toDate(play.timestamp as any);
+    if (!ts) continue;
+    const dateKey = ts.toISOString().split('T')[0];
     const current = map.get(dateKey) || 0;
     map.set(dateKey, current + metricValue(play, metric));
   }
@@ -27,8 +35,10 @@ export function aggregateByMonth(plays: Play[], metric: Metric = 'minutes'): Map
   const map = new Map<string, number>();
   
   for (const play of plays) {
-    const year = play.timestamp.getFullYear();
-    const month = play.timestamp.getMonth() + 1;
+    const ts = toDate(play.timestamp as any);
+    if (!ts) continue;
+    const year = ts.getFullYear();
+    const month = ts.getMonth() + 1;
     const key = `${year}-${month.toString().padStart(2, '0')}`;
     const current = map.get(key) || 0;
     map.set(key, current + metricValue(play, metric));
@@ -44,7 +54,9 @@ export function aggregateByYear(plays: Play[], metric: Metric = 'minutes'): Map<
   const map = new Map<number, number>();
   
   for (const play of plays) {
-    const year = play.timestamp.getFullYear();
+    const ts = toDate(play.timestamp as any);
+    if (!ts) continue;
+    const year = ts.getFullYear();
     const current = map.get(year) || 0;
     map.set(year, current + metricValue(play, metric));
   }
@@ -59,7 +71,9 @@ export function aggregateByHour(plays: Play[], metric: Metric = 'minutes'): Map<
   const map = new Map<number, number>();
   
   for (const play of plays) {
-    const hour = play.timestamp.getHours();
+    const ts = toDate(play.timestamp as any);
+    if (!ts) continue;
+    const hour = ts.getHours();
     const current = map.get(hour) || 0;
     map.set(hour, current + metricValue(play, metric));
   }

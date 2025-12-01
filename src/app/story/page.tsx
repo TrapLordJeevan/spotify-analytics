@@ -20,18 +20,24 @@ export default function StoryPage() {
       showFilters={true}
     >
       {hasAnyData ? (
-        <div className="space-y-6">
-          <StoryCard title="Year-by-year highlights" eyebrow="Timeline">
-            <YearTimeline plays={plays} metric={metric} />
-          </StoryCard>
+        <div className="space-y-4">
+          <div className="w-full max-w-6xl">
+            <StoryCard title="Year-by-year highlights" eyebrow="Timeline">
+              <YearTimeline plays={plays} metric={metric} />
+            </StoryCard>
+          </div>
 
-          <StoryCard title="Artist phases" eyebrow="Obsessions">
-            <PhaseHighlight plays={plays} metric={metric} />
-          </StoryCard>
+          <div className="w-full max-w-6xl">
+            <StoryCard title="Artist phases" eyebrow="Obsessions">
+              <PhaseHighlight plays={plays} metric={metric} />
+            </StoryCard>
+          </div>
 
-          <StoryCard title="Rediscoveries" eyebrow="Comebacks">
-            <RediscoveryHighlight plays={plays} />
-          </StoryCard>
+          <div className="w-full max-w-6xl">
+            <StoryCard title="Rediscoveries" eyebrow="Comebacks">
+              <RediscoveryHighlight plays={plays} />
+            </StoryCard>
+          </div>
         </div>
       ) : (
         <EmptyState />
@@ -56,6 +62,4 @@ function EmptyState() {
     </div>
   );
 }
-
-
 

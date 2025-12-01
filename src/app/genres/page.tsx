@@ -18,12 +18,18 @@ export default function GenresPage() {
       description="See the mix of genres powering your listening and how that taste evolves."
     >
       {hasAnyData ? (
-        <div className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
-            <TopGenresChart plays={plays} metric={metric} />
-            <GenresTable plays={plays} metric={metric} />
+        <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+            <div className="rounded-2xl border border-white/10 bg-[#111111] p-4">
+              <TopGenresChart plays={plays} metric={metric} />
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-[#111111] p-4">
+              <GenresTable plays={plays} metric={metric} />
+            </div>
           </div>
-          <GenreEvolution plays={plays} />
+          <div className="rounded-2xl border border-white/10 bg-[#111111] p-4">
+            <GenreEvolution plays={plays} />
+          </div>
         </div>
       ) : (
         <EmptyState />
@@ -48,6 +54,3 @@ function EmptyState() {
     </div>
   );
 }
-
-
-

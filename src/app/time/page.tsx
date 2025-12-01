@@ -19,13 +19,21 @@ export default function TimePage() {
       description="How your listening ebbs and flows across hours, months, and years."
     >
       {hasAnyData ? (
-        <div className="space-y-6">
-          <TimeOfDayChart plays={plays} metric={metric} />
-          <div className="grid gap-6 lg:grid-cols-2">
-            <MonthlyChart plays={plays} metric={metric} />
-            <YearlyChart plays={plays} metric={metric} />
+        <div className="space-y-4">
+          <div className="w-full max-w-6xl">
+            <TimeOfDayChart plays={plays} metric={metric} />
           </div>
-          <DailyChart plays={plays} metric={metric} />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="w-full max-w-5xl">
+              <MonthlyChart plays={plays} metric={metric} />
+            </div>
+            <div className="w-full max-w-5xl">
+              <YearlyChart plays={plays} metric={metric} />
+            </div>
+          </div>
+          <div className="w-full max-w-6xl">
+            <DailyChart plays={plays} metric={metric} />
+          </div>
         </div>
       ) : (
         <EmptyState />
@@ -50,6 +58,4 @@ function EmptyState() {
     </div>
   );
 }
-
-
 
