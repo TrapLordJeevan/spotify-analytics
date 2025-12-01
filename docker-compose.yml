@@ -1,24 +1,11 @@
-version: '3.9'
-
 services:
   spotify-analytics:
     build: .
     container_name: spotify-analytics
     restart: unless-stopped
-    # Remove port mapping - Caddy will handle external access
-    expose:
-      - '80'
+    ports:
+      - "3015:3000"
     environment:
       NODE_ENV: production
-      NEXT_TELEMETRY_DISABLED: '1'
-    networks:
-      - reverse-proxy  # Connect to your Caddy network
-    labels:
-      # Caddy labels for automatic discovery (if using Caddy Docker integration)
-      - "caddy=spotify.jeevo.xyz"
-      - "caddy.reverse_proxy={{upstreams 80}}"
-
-networks:
-  reverse-proxy:
-    external: true  # Use the existing reverse-proxy network
+      NEXT_TELEMETRY_DISABLED: "1"
 
