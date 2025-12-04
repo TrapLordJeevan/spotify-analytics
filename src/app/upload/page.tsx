@@ -12,7 +12,7 @@ export default function UploadPage() {
 
   return (
     <MainLayout
-      title="Upload your data"
+      title="Hi Twin!, Upload your data"
       description="Everything is processed locally in your browser—nothing leaves your device."
       showFilters={false}
     >
