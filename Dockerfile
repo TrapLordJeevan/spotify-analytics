@@ -1,16 +1,30 @@
-FROM node:20-alpine
-WORKDIR /app
-
 # Install deps
+FROM node:20-alpine AS deps
+WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source
+# Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next dev needs to listen on all interfaces
-EXPOSE 3000
-ENV NODE_ENV=development
+# This should behave exactly like my local `npm run build`
+RUN npm run build
 
-# Run dev server on 0.0.0.0:3000
-CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0", "-p", "3000"]
+# Runtime image
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Bring in the built app
+COPY --from=builder /app ./
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]
